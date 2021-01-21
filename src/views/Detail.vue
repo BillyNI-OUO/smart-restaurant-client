@@ -1,11 +1,11 @@
 <template>
-  <v-layout wrap class="panel detail">
+  <v-layout wrap class="panel detail" style="padding-bottom: 64px;">
     <v-flex xs12 pb-3>
       <v-layout wrap>
         <v-flex
           xs12
           class="detail-cover"
-          style="background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);"
+          style="background-image: url(https://lh5.googleusercontent.com/p/AF1QipNQdMzkcM-kCtxRQ8897hVVqQFWSPQIKf8CpqiB=w408-h306-k-no);"
         >
           <v-container>
             <v-btn
@@ -48,9 +48,13 @@
                   background-color="yellow darken-4"
                   color="yellow darken-4"
                   half-increments
+                  v-if="placeInfo.rating"
                 ></v-rating>
-                <span class="grey--text text--darken-1">
-                  ({{ placeInfo.user_ratings_total }})
+                <span
+                  class="grey--text text--darken-1"
+                  v-if="placeInfo.user_ratings_total"
+                >
+                  ({{ placeInfo.user_ratings_total }}則評論)
                 </span>
                 <span
                   v-if="placeInfo.price_level"
@@ -58,6 +62,13 @@
                 >
                   ·
                   {{ '$'.repeat(placeInfo.price_level) }}
+                </span>
+
+                <span
+                  v-if="!placeInfo.user_ratings_total"
+                  class="grey--text text--darken-1"
+                >
+                  評論不足
                 </span>
               </span>
               <br />
@@ -70,7 +81,9 @@
 
             <v-list-item
               :href="
-                `https://www.google.com.tw/maps/search/${placeInfo.name} ${placeInfo.formatted_address}`
+                `https://www.google.com.tw/maps/search/${
+                  placeInfo.name
+                } ${placeInfo.formatted_address || ''}`
               "
               target="_blank"
             >
@@ -86,7 +99,7 @@
 
             <v-divider></v-divider>
 
-            <v-list-item>
+            <v-list-item v-if="placeInfo.formatted_address">
               <v-list-item-icon>
                 <v-icon color="primary">mdi-map-marker</v-icon>
               </v-list-item-icon>
@@ -97,8 +110,9 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-divider></v-divider>
+            <v-divider v-if="placeInfo.formatted_address"></v-divider>
 
+            <!--
             <v-list-item>
               <v-list-item-icon>
                 <v-icon color="primary">mdi-pencil</v-icon>
@@ -111,6 +125,7 @@
             </v-list-item>
 
             <v-divider></v-divider>
+            -->
           </v-list>
 
           <v-container>
@@ -122,7 +137,7 @@
                   (item) => placeInfo[`${item.key}_rating`]
                 )"
                 :key="item.key"
-                style="text-align: center;"
+                style="text-align: center; user-select: none;"
               >
                 <div style="font-size: 15px;">
                   {{ item.text }}
@@ -190,14 +205,31 @@
           <v-container mb-3>
             <v-card>
               <v-card-title>您覺得這些資訊有用嗎？</v-card-title>
-              <v-card-actions>
+
+              <v-card-actions v-if="!rated">
                 <v-spacer></v-spacer>
-                <v-btn text>
+                <v-btn text @click="feedback(0)">
                   <v-icon class="mr-1">mdi-emoticon-sad-outline</v-icon>沒有用
                 </v-btn>
-                <v-btn outlined>
+                <v-btn outlined @click="feedback(1)">
                   <v-icon class="mr-1">mdi-emoticon-happy-outline</v-icon>有幫助
                 </v-btn>
+              </v-card-actions>
+
+              <v-card-actions v-else>
+                <div style="margin: 0 auto; text-align: center;">
+                  <img
+                    v-if="feedbackRating === 1"
+                    style=" width: 200px;"
+                    src="https://chojugiga.com/c/choju54_0031/choju54_0031.png"
+                  />
+                  <img
+                    v-else
+                    style=" width: 200px;"
+                    src="https://chojugiga.com/c/choju51_0035/choju51_0035.png"
+                  />
+                  <p>謝謝你</p>
+                </div>
               </v-card-actions>
             </v-card>
           </v-container>
@@ -205,7 +237,7 @@
           <v-divider></v-divider>
 
           <v-container style="display: none;">
-            <h3 class="mt-3 mb-2">評論摘要</h3>
+            <h3 class="mt-3 mb-2">評論</h3>
           </v-container>
         </v-flex>
       </v-layout>
@@ -228,7 +260,9 @@ export default {
   name: 'Detail',
   data: () => ({
     cid: '',
-    placeInfo: {}
+    placeInfo: {},
+    rated: false,
+    feedbackRating: 1
   }),
   components: {},
   computed: {
@@ -247,15 +281,37 @@ export default {
   },
   methods: {
     load(cid) {
-      // cid = '12930000113132718392'
       axios.get(`${window.APIBASE}/detail/${cid}`).then((res) => {
-        Vue.set(this, 'placeInfo', res.data)
+        let data = res.data
+        if (data.error) {
+          console.error(data)
+          return
+        }
+        this.rated = false
+        Vue.set(this, 'placeInfo', data)
       })
     },
     close() {
       bus.$emit('search-clear')
       this.SearchEngine.clear()
+      this.rated = false
       this.$router.push('/')
+    },
+    feedback(rating) {
+      if (!this.cid) {
+        return
+      }
+      axios
+        .get(`${window.APIBASE}/feedback/place/${this.cid}/${rating}`)
+        .then((res) => {
+          let data = res.data
+          if (data.error) {
+            console.error(data)
+            return
+          }
+          this.rated = true
+          this.feedbackRating = rating
+        })
     }
   },
   mounted() {

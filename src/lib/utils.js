@@ -12,7 +12,11 @@ export const aspectRatingsDict = (() => {
   return dict
 })()
 
-export function aspectRatingDescription(placeInfo, rich = false) {
+export function aspectRatingDescription(
+  placeInfo,
+  rich = false,
+  highlight = null
+) {
   // 😄😫😐😡🤢
   /*
       function getRatingDescription(rating) {

@@ -1,10 +1,11 @@
 <template>
-  <v-container class="panel search">
+  <v-container class="panel search" style="padding-bottom: 64px;">
     <v-layout wrap>
       <v-flex xs12 pb-3>
         <v-layout wrap>
           <v-flex xs12 mb-3>
             <v-text-field
+              ref="searchSearch"
               v-model="keyword"
               placeholder="搜尋"
               solo
@@ -13,8 +14,8 @@
               prepend-icon="mdi-arrow-left"
               append-icon="mdi-magnify"
               @click:prepend="close"
-              @keyup.enter="searchText"
-              @click:append="searchText"
+              @keyup.enter="searchText(keyword)"
+              @click:append="searchText(keyword)"
               @click:clear="close"
               autocomplete="off"
               rounded
@@ -60,6 +61,12 @@
 
       <v-flex xs12>
         <v-layout wrap>
+          <template v-if="SearchEngine.resultList.length === 0">
+            <v-flex xs12 style="text-align: center;" pt-5>
+              沒有符合的項目
+            </v-flex>
+          </template>
+
           <template v-for="(item, index) in SearchEngine.resultList">
             <v-flex
               xs12
@@ -72,10 +79,10 @@
                   xs4
                   mr-3
                   class="search-item-img"
-                  style="background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);"
+                  style="display: none; background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);"
                 >
                 </v-flex>
-                <v-flex xs8 pt-3 class="search-item-content">
+                <v-flex xs12 pt-3 class="search-item-content">
                   <h3
                     style="height: 28px; overflow: hidden; text-overflow: ellipse; text-wrap: no-wrap;"
                   >
@@ -87,6 +94,7 @@
                     </span>
 
                     <v-rating
+                      v-if="item.rating"
                       style="display: inline; position: relative; top: -2px;"
                       dense
                       empty-icon="mdi-star-outline"
@@ -101,7 +109,10 @@
                       color="yellow darken-4"
                       half-increments
                     ></v-rating>
-                    <span class="grey--text text--darken-1">
+                    <span
+                      class="grey--text text--darken-1"
+                      v-if="item.user_ratings_total"
+                    >
                       ({{ item.user_ratings_total }})
                     </span>
 
@@ -112,6 +123,13 @@
                       ·
                       {{ '$'.repeat(item.price_level) }}
                     </span>
+
+                    <span
+                      v-if="!item.user_ratings_total"
+                      class="grey--text text--darken-1"
+                    >
+                      評論不足
+                    </span>
                   </div>
                   <div
                     style="height: 24px; overflow: hidden;"
@@ -121,7 +139,7 @@
                   </div>
                   <div
                     style="height: 24px; overflow: hidden;"
-                    v-html="aspectRatingDescription(item, true)"
+                    v-html="aspectRatingDescription(item, true, filterSortBy)"
                   ></div>
                 </v-flex>
               </v-layout>
@@ -170,6 +188,7 @@ export default {
   name: 'Search',
   mixins: [keepScrollTop],
   data: () => ({
+    text: '',
     keyword: '',
     ratingItems: [
       { text: '評價', value: 0 },
@@ -190,13 +209,13 @@ export default {
     filterPriceLevel: 0,
     filterSortBy: 'distance',
     sortByList: [
-      { text: '距離', value: 'distance' },
-      { text: '評價', value: 'rating' },
-      { text: '食物評價', value: 'food_rating' },
-      { text: '服務評價', value: 'service_rating' },
-      { text: '氣氛評價', value: 'atmosphere_rating' },
-      { text: '清潔評價', value: 'cleanliness_rating' },
-      { text: '價值評價', value: 'value_rating' }
+      { text: '距離排序', value: 'distance' },
+      { text: '評價排序', value: 'rating' },
+      { text: '食物評價排序', value: 'food_rating' },
+      { text: '服務評價排序', value: 'service_rating' },
+      { text: '氣氛評價排序', value: 'atmosphere_rating' },
+      { text: '清潔評價排序', value: 'cleanliness_rating' },
+      { text: '價值評價排序', value: 'value_rating' }
     ]
   }),
   components: {},
@@ -215,20 +234,28 @@ export default {
     }
   },
   methods: {
-    close() {
+    blur() {
+      this.$refs.searchSearch.blur()
+    },
+    close(redicrect = true) {
       this.keyword = ''
       this.filterRating = 0
       this.filterPriceLevel = 0
       this.filterSortBy = 'distance'
       bus.$emit('search-clear')
-      this.$router.push('/')
+      this.blur()
+      if (redicrect) {
+        this.$router.push('/')
+      }
       this.SearchEngine.clear()
+      blur()
     },
     search(text) {
       if (!text) {
         text = this.keyword
       }
       this.keyword = text
+      this.blur()
       this.SearchEngine.clear()
       console.log('perform searching.', text)
       if (text === '附近的餐廳') {
@@ -255,8 +282,8 @@ export default {
       navigator.geolocation.getCurrentPosition(
         (res) => {
           console.log(res)
-          let lat = res.coords.latitude
-          let lng = res.coords.longitude
+          let lat = res.coords.latitude + 0
+          let lng = res.coords.longitude - 0.008755
           this.searchNearby(lat, lng)
         },
         (err) => {
@@ -295,10 +322,11 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
+      console.log(vm.keyword, to.params.query)
       if (vm.keyword === to.params.query) {
         return
       }
-      console.log('beforeRouteEnter')
+      console.log('beforeRouteEnter!')
       vm.keyword = to.params.query
       vm.search(to.params.query)
     })
@@ -306,6 +334,13 @@ export default {
   beforeRouteUpdate(to, from, next) {
     console.log('beforeRouteUpdate!', to.params.query)
     this.search(to.params.query)
+    next()
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave!')
+    if (to.name === 'Home') {
+      this.close(false)
+    }
     next()
   }
 }
@@ -315,7 +350,6 @@ export default {
 .search {
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
 }
 
 .search-item-img {

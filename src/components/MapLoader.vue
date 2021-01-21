@@ -95,6 +95,8 @@ export default {
         SearchEngine.mapLat = adjustedCenter.lat
         SearchEngine.mapLng = adjustedCenter.lng
       })
+
+      SearchEngine.$emit('map-ready')
     },
 
     removeAllMarkers() {
@@ -126,7 +128,7 @@ export default {
           // fontWeight: 'bold',
           color: 'black',
           fontSize: '16px',
-          text: args.title.slice(0, 10),
+          text: args.title.slice(0, 30),
           className: 'marker-label'
         },
         icon: {
@@ -151,7 +153,7 @@ export default {
             className: 'marker-label'
           },
           icon: {
-            url: 'http://image.flaticon.com/icons/svg/252/252025.svg',
+            url: 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png',
             scaledSize: new this.google.maps.Size(0, 0),
             origin: new this.google.maps.Point(0, 0),
             anchor: new this.google.maps.Point(0, 0),

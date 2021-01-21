@@ -15,11 +15,50 @@
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
 
-    <title>智慧餐廳</title>
+    <meta
+      name="Description"
+      content="3秒找到好餐廳！美食專家透過大數據分析得到餐廳的深度見解，讓你不再踩雷"
+    />
+    <meta
+      name="keyword"
+      content="美食專家, 美食評鑑, 餐廳評論美食專家, 美食評鑑, 餐廳評論"
+    />
+
+    <meta property="og:title" content="美食專家 讓你3秒找到好餐廳！" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://smart-restaurant.github.io" />
+    <meta
+      property="og:image"
+      content="https://smart-restaurant.github.io/android-chrome-512x512.png"
+    />
+    <meta
+      property="og:description"
+      content="3秒找到好餐廳！美食專家透過大數據分析得到餐廳的深度見解，讓你不再踩雷"
+    />
+    <meta property="og:site_name" content="美食專家" />
+
+    <title>美食專家</title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-PRN13V8SVN"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+
+      gtag('config', 'G-PRN13V8SVN')
+    </script>
+
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
     />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"
@@ -32,11 +71,9 @@
   </head>
   <body>
     <noscript>
-      <strong
-        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
-        properly without JavaScript enabled. Please enable it to
-        continue.</strong
-      >
+      <strong>
+        讓你3秒找到好餐廳！美食專家透過大數據分析得到餐廳的深度見解，讓你不再踩雷
+      </strong>
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->

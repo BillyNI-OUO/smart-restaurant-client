@@ -4,7 +4,11 @@
       <div class="map">
         <!-- <Map :markers="markers" :center="center" :zoom="zoom"> </Map> -->
 
-        <map-loader :markers="markers" :map-config="mapConfig" apiKey="">
+        <map-loader
+          :markers="markers"
+          :map-config="mapConfig"
+          apiKey="AIzaSyBz512sd4Re60aeviBUjHX8X03lAi3UZBs"
+        >
         </map-loader>
 
         <v-btn
@@ -22,15 +26,16 @@
       <div class="map-search">
         <v-text-field
           v-model="keyword"
-          placeholder="搜尋"
+          placeholder="搜尋餐廳"
           solo
           append-icon="mdi-magnify"
           clearable
           hide-details
-          @keyup.enter="searchText"
-          @click:append="searchText"
+          @keyup.enter="searchText(keyword)"
+          @click:append="searchText(keyword)"
           @click:clear="close"
           autocomplete="off"
+          ref="appSearch"
           rounded
         ></v-text-field>
         <div class="mt-3">
@@ -84,12 +89,20 @@ export default {
   data: () => ({
     keyword: '',
     mapConfig: {
+      mapId: '2d966253da63a7e7',
       zoom: 12,
       center: { lat: 24.79612, lng: 120.993 },
       fullscreenControl: false,
       gestureHandling: 'greedy',
       streetViewControl: false,
-      zoomControl: false
+      mapTypeControl: false,
+      zoomControl: false,
+      styles: [
+        {
+          featureType: 'road',
+          stylers: [{ visibility: 'off' }]
+        }
+      ]
     },
     showSearch: true
   }),
@@ -116,20 +129,31 @@ export default {
     }
   },
   methods: {
+    blur() {
+      this.$refs.appSearch.blur()
+    },
     close() {
       this.keyword = ''
       bus.$emit('search-clear')
       this.$router.push('/')
       this.SearchEngine.clear()
+      this.blur()
     },
     searchText(keyword) {
+      if (!keyword) {
+        return
+      }
       console.log('App:', keyword || this.keyword)
       if (keyword) {
         this.keyword = keyword
       }
       this.showSearch = true
       this.$router.push(`/search/${this.keyword}`)
+      this.blur()
     }
+  },
+  created() {
+    this.$router.push('/')
   },
   mounted() {
     bus.$on('search-clear', () => {
@@ -164,5 +188,6 @@ export default {
   position: fixed;
   background-color: white;
   box-shadow: 0px 0 5px #000;
+  overflow-y: scroll;
 }
 </style>
