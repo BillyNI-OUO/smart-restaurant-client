@@ -128,7 +128,7 @@
             -->
           </v-list>
 
-          <v-container>
+          <v-container v-if="hasAnyAspectRatings">
             <h3 class="mt-3 mb-2">評論摘要</h3>
 
             <v-layout wrap>
@@ -137,7 +137,12 @@
                   (item) => placeInfo[`${item.key}_rating`]
                 )"
                 :key="item.key"
-                style="text-align: center; user-select: none;"
+                style="text-align: center; user-select: none; cursor: pointer;"
+                @click="
+                  reviewsAspect = item.key
+                  loadReviews()
+                "
+                v-ripple
               >
                 <div style="font-size: 15px;">
                   {{ item.text }}
@@ -170,41 +175,13 @@
                 </div>
               </v-flex>
             </v-layout>
-            <!--
-            <p>
-              <template v-for="item in aspectRatingsList">
-                <div
-                  :key="item.key"
-                  class="mb-2"
-                  v-if="placeInfo[`${item.key}_rating`]"
-                >
-                  {{ item.text }}
-                  {{ placeInfo[`${item.key}_rating`].toFixed(1) }}
-                  <v-rating
-                    style="display: inline; position: relative; top: -2px;"
-                    dense
-                    empty-icon="mdi-star-outline"
-                    full-icon="mdi-star"
-                    half-icon="mdi-star-half-full"
-                    hover
-                    length="5"
-                    :value="placeInfo[`${item.key}_rating`]"
-                    readonly
-                    size="18"
-                    background-color="yellow darken-4"
-                    color="yellow darken-4"
-                    half-increments
-                  ></v-rating>
-                  ({{ placeInfo[`${item.key}_count`] }})
-                </div>
-              </template>
-            </p>
-                -->
           </v-container>
 
-          <v-container mb-3>
+          <v-container mb-3 v-if="hasAnyAspectRatings">
             <v-card>
-              <v-card-title>您覺得這些資訊有用嗎？</v-card-title>
+              <v-card-title>
+                您覺得這些資訊有用嗎？
+              </v-card-title>
 
               <v-card-actions v-if="!rated">
                 <v-spacer></v-spacer>
@@ -234,11 +211,89 @@
             </v-card>
           </v-container>
 
-          <v-divider></v-divider>
+          <v-divider v-if="hasAnyAspectRatings"></v-divider>
 
-          <v-container style="display: none;">
-            <h3 class="mt-3 mb-2">評論</h3>
+          <v-container>
+            <h3 class="mt-5 mb-2">評論</h3>
+
+            <v-layout>
+              <v-flex mr-3>
+                <v-select
+                  v-model="reviewsAspect"
+                  :items="reviewsAspectList"
+                  dense
+                  outlined
+                  hide-details
+                  @change="loadReviews()"
+                ></v-select>
+              </v-flex>
+              <v-flex>
+                <v-select
+                  v-model="reviewsSortBy"
+                  :items="reviewsSortByList"
+                  dense
+                  outlined
+                  hide-details
+                  @change="loadReviews()"
+                ></v-select>
+              </v-flex>
+            </v-layout>
           </v-container>
+
+          <template v-for="item in reviews">
+            <v-container :key="item.id">
+              <v-layout>
+                <v-flex class="pr-3" style="padding-top: 2px;">
+                  <v-avatar
+                    :color="item.rating > 3 ? 'green' : 'red'"
+                    size="42"
+                  >
+                    <v-icon dark v-if="item.rating > 3">
+                      mdi-thumb-up
+                    </v-icon>
+                    <v-icon dark v-else>
+                      mdi-thumb-down
+                    </v-icon>
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs12>
+                  <span
+                    class="grey--text text--darken-1"
+                    style="font-size: 16px;"
+                  >
+                    {{ item.author_name }}
+                  </span>
+                  <br />
+
+                  <span class="yellow--text text--darken-4">
+                    {{ item.rating }}
+                  </span>
+                  <v-rating
+                    style="display: inline; position: relative; top: -2px;"
+                    dense
+                    empty-icon="mdi-star-outline"
+                    full-icon="mdi-star"
+                    half-icon="mdi-star-half-full"
+                    hover
+                    length="5"
+                    :value="item.rating"
+                    readonly
+                    size="18"
+                    background-color="yellow darken-4"
+                    color="yellow darken-4"
+                    half-increments
+                  ></v-rating>
+                  <span class="grey--text"> · {{ toDate(item.time) }} </span>
+                </v-flex>
+              </v-layout>
+
+              <p
+                class="pt-3 pb-0 mb-0"
+                v-html="item.text.replace(/\n/g, '<br>')"
+              ></p>
+            </v-container>
+            <v-divider :key="item.id + '-divider'"></v-divider>
+          </template>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -262,9 +317,25 @@ export default {
     cid: '',
     placeInfo: {},
     rated: false,
-    feedbackRating: 1
+    feedbackRating: 1,
+    reviews: [],
+    reviewsAspect: 'all',
+    reviewsAspectList: [
+      { text: '全部', value: 'all' },
+      { text: '食物', value: 'food' },
+      { text: '服務', value: 'service' },
+      { text: '氣氛', value: 'atmosphere' },
+      { text: '清潔', value: 'cleanliness' },
+      { text: '價值', value: 'value' }
+    ],
+    reviewsSortBy: 'importance',
+    reviewsSortByList: [
+      { text: '重要性', value: 'importance' },
+      { text: '時間', value: 'time' },
+      { text: '評價（高至低）', value: 'rating_desc' },
+      { text: '評價（低至高）', value: 'rating_asc' }
+    ]
   }),
-  components: {},
   computed: {
     SearchEngine() {
       return SearchEngine
@@ -277,9 +348,21 @@ export default {
     },
     aspectRatingDescription() {
       return aspectRatingDescription
+    },
+    hasAnyAspectRatings() {
+      for (let { key } of this.aspectRatingsList) {
+        if (this.placeInfo[key + '_count'] > 0) {
+          return true
+        }
+      }
+      return false
     }
   },
   methods: {
+    toDate(time) {
+      let d = new Date(time)
+      return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
+    },
     load(cid) {
       axios.get(`${window.APIBASE}/detail/${cid}`).then((res) => {
         let data = res.data
@@ -288,13 +371,32 @@ export default {
           return
         }
         this.rated = false
+        this.reviewsAspect = 'all'
+        this.reviewsSortBy = 'importance'
         Vue.set(this, 'placeInfo', data)
+
+        this.loadReviews()
+      })
+    },
+    loadReviews() {
+      Vue.set(this, 'reviews', [])
+      let url = `${window.APIBASE}/reviews/${this.cid}?aspect=${this.reviewsAspect}&sort_by=${this.reviewsSortBy}`
+      axios.get(url).then((res) => {
+        let data = res.data
+        if (data.error) {
+          console.error(data)
+          return
+        }
+        Vue.set(this, 'reviews', data.data)
       })
     },
     close() {
       bus.$emit('search-clear')
       this.SearchEngine.clear()
       this.rated = false
+      this.reviewsAspect = 'all'
+      this.reviewsSortBy = 'importance'
+      Vue.set(this, 'reviews', [])
       this.$router.push('/')
     },
     feedback(rating) {
