@@ -1,5 +1,5 @@
 <template>
-  <v-container class="panel search" style="padding-bottom: 64px;">
+  <v-container class="panel search" style="padding-bottom: 64px">
     <v-layout wrap>
       <v-flex xs12 pb-3>
         <v-layout wrap>
@@ -62,7 +62,7 @@
       <v-flex xs12>
         <v-layout wrap>
           <template v-if="SearchEngine.resultList.length === 0">
-            <v-flex xs12 style="text-align: center;" pt-5>
+            <v-flex xs12 style="text-align: center" pt-5>
               沒有符合的項目
             </v-flex>
           </template>
@@ -71,31 +71,39 @@
             <v-flex
               xs12
               :key="index"
-              @click="$router.push(`/detail/${item.cid}`)"
-              style="cursor: pointer;"
+              @click="$router.push(`/detail/${item.cid}`).catch(() => {})"
+              style="cursor: pointer"
             >
               <v-layout>
                 <v-flex
                   xs4
                   mr-3
                   class="search-item-img"
-                  style="display: none; background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);"
+                  style="
+                    display: none;
+                    background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);
+                  "
                 >
                 </v-flex>
                 <v-flex xs12 pt-3 class="search-item-content">
                   <h3
-                    style="height: 28px; overflow: hidden; text-overflow: ellipse; text-wrap: no-wrap;"
+                    style="
+                      height: 28px;
+                      overflow: hidden;
+                      text-overflow: ellipse;
+                      text-wrap: no-wrap;
+                    "
                   >
                     {{ item.name }}
                   </h3>
-                  <div style="height: 24px; overflow: hidden;">
+                  <div style="height: 24px; overflow: hidden">
                     <span class="yellow--text text--darken-4">
                       {{ item.rating }}
                     </span>
 
                     <v-rating
                       v-if="item.rating"
-                      style="display: inline; position: relative; top: -2px;"
+                      style="display: inline; position: relative; top: -2px"
                       dense
                       empty-icon="mdi-star-outline"
                       full-icon="mdi-star"
@@ -121,7 +129,7 @@
                       class="grey--text text--darken-1"
                     >
                       ·
-                      {{ '$'.repeat(item.price_level) }}
+                      {{ "$".repeat(item.price_level) }}
                     </span>
 
                     <span
@@ -132,13 +140,13 @@
                     </span>
                   </div>
                   <div
-                    style="height: 24px; overflow: hidden;"
+                    style="height: 24px; overflow: hidden"
                     class="grey--text text--darken-1"
                   >
                     {{ item.formatted_address }}
                   </div>
                   <div
-                    style="height: 24px; overflow: hidden;"
+                    style="height: 24px; overflow: hidden"
                     v-html="aspectRatingDescription(item, true, filterSortBy)"
                   ></div>
                 </v-flex>
@@ -153,197 +161,197 @@
 </template>
 
 <script>
-import bus from '../lib/bus'
-import SearchEngine from '../lib/search'
+import bus from "../lib/bus";
+import SearchEngine from "../lib/search";
 import {
   aspectRatingsList,
   aspectRatingsDict,
-  aspectRatingDescription
-} from '../lib/utils'
+  aspectRatingDescription,
+} from "../lib/utils";
 
 // 定义mixin, 用于记录scroll位置
 const keepScrollTop = {
   mounted() {
     // 获取组件根元素Dom
-    const page = this.$el
+    const page = this.$el;
     // 绑定事件,滚动时,储存位置到this.scrollTop
-    page.addEventListener('scroll', () => {
-      this.scrollTop = page.scrollTop
-    })
+    page.addEventListener("scroll", () => {
+      this.scrollTop = page.scrollTop;
+    });
   },
   // activated生命钩子在keep-alive被激活时调用
   activated() {
     // 如果曾滚动过,则还原位置
     if (this.scrollTop) {
-      const page = this.$el
-      page.scrollTop = this.scrollTop
+      const page = this.$el;
+      page.scrollTop = this.scrollTop;
     }
   },
   // deactivated生命钩子在keep-alive被停用时调用
   // 如果onScroll绑定在window之类的元素上,记得用removeEventListener删除事件
-  deactivated() {}
-}
+  deactivated() {},
+};
 
 export default {
-  name: 'Search',
+  name: "Search",
   mixins: [keepScrollTop],
   data: () => ({
-    text: '',
-    keyword: '',
+    text: "",
+    keyword: "",
     ratingItems: [
-      { text: '評價', value: 0 },
-      { text: '1⭐+', value: 1 },
-      { text: '2⭐+', value: 2 },
-      { text: '3⭐+', value: 3 },
-      { text: '4⭐+', value: 4 },
-      { text: '4.5⭐+', value: 4.5 }
+      { text: "評價", value: 0 },
+      { text: "1⭐+", value: 1 },
+      { text: "2⭐+", value: 2 },
+      { text: "3⭐+", value: 3 },
+      { text: "4⭐+", value: 4 },
+      { text: "4.5⭐+", value: 4.5 },
     ],
     filterRating: 0,
     priceLevelItems: [
-      { text: '價格', value: 0 },
-      { text: '$+', value: 1 },
-      { text: '$$+', value: 2 },
-      { text: '$$$+', value: 3 },
-      { text: '$$$$+', value: 4 }
+      { text: "價格", value: 0 },
+      { text: "$+", value: 1 },
+      { text: "$$+", value: 2 },
+      { text: "$$$+", value: 3 },
+      { text: "$$$$+", value: 4 },
     ],
     filterPriceLevel: 0,
-    filterSortBy: 'distance',
+    filterSortBy: "distance",
     sortByList: [
-      { text: '距離排序', value: 'distance' },
-      { text: '評價排序', value: 'rating' },
-      { text: '食物評價排序', value: 'food_rating' },
-      { text: '服務評價排序', value: 'service_rating' },
-      { text: '氣氛評價排序', value: 'atmosphere_rating' },
-      { text: '清潔評價排序', value: 'cleanliness_rating' },
-      { text: '價值評價排序', value: 'value_rating' }
-    ]
+      { text: "距離排序", value: "distance" },
+      { text: "評價排序", value: "rating" },
+      { text: "食物評價排序", value: "food_rating" },
+      { text: "服務評價排序", value: "service_rating" },
+      { text: "氣氛評價排序", value: "atmosphere_rating" },
+      { text: "清潔評價排序", value: "cleanliness_rating" },
+      { text: "價值評價排序", value: "value_rating" },
+    ],
   }),
   components: {},
   computed: {
     SearchEngine() {
-      return SearchEngine
+      return SearchEngine;
     },
     aspectRatingsDict() {
-      return aspectRatingsDict
+      return aspectRatingsDict;
     },
     aspectRatingsList() {
-      return aspectRatingsList
+      return aspectRatingsList;
     },
     aspectRatingDescription() {
-      return aspectRatingDescription
-    }
+      return aspectRatingDescription;
+    },
   },
   methods: {
     blur() {
-      this.$refs.searchSearch.blur()
+      this.$refs.searchSearch.blur();
     },
     close(redicrect = true) {
-      this.keyword = ''
-      this.filterRating = 0
-      this.filterPriceLevel = 0
-      this.filterSortBy = 'distance'
-      bus.$emit('search-clear')
-      this.blur()
+      this.keyword = "";
+      this.filterRating = 0;
+      this.filterPriceLevel = 0;
+      this.filterSortBy = "distance";
+      bus.$emit("search-clear");
+      this.blur();
       if (redicrect) {
-        this.$router.push('/')
+        this.$router.push("/").catch(() => {});
       }
-      this.SearchEngine.clear()
-      blur()
+      this.SearchEngine.clear();
+      blur();
     },
     search(text) {
       if (!text) {
-        text = this.keyword
+        text = this.keyword;
       }
-      this.keyword = text
-      this.blur()
-      this.SearchEngine.clear()
-      console.log('perform searching.', text)
-      if (text === '附近的餐廳') {
-        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-      } else if (text === '我附近的餐廳') {
-        this.searchNearbyGPS()
-      } else if (text === '氣氛好的餐廳') {
-        this.filterSortBy = 'atmosphere_rating'
-        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-      } else if (text === '食物好的餐廳') {
-        this.filterSortBy = 'food_rating'
-        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
+      this.keyword = text;
+      this.blur();
+      this.SearchEngine.clear();
+      console.log("perform searching.", text);
+      if (text === "附近的餐廳") {
+        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng);
+      } else if (text === "我附近的餐廳") {
+        this.searchNearbyGPS();
+      } else if (text === "氣氛好的餐廳") {
+        this.filterSortBy = "atmosphere_rating";
+        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng);
+      } else if (text === "食物好的餐廳") {
+        this.filterSortBy = "food_rating";
+        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng);
       } else {
         this.SearchEngine.search({
           keyword: text,
           rating: this.filterRating,
           price_level: this.filterPriceLevel,
-          sort_by: this.filterSortBy
-        })
+          sort_by: this.filterSortBy,
+        });
       }
     },
     searchNearbyGPS() {
-      console.log('gps')
+      console.log("gps");
       navigator.geolocation.getCurrentPosition(
         (res) => {
-          console.log(res)
-          let lat = res.coords.latitude + 0
-          let lng = res.coords.longitude - 0.008755
-          this.searchNearby(lat, lng)
+          console.log(res);
+          let lat = res.coords.latitude + 0;
+          let lng = res.coords.longitude - 0.008755;
+          this.searchNearby(lat, lng);
         },
         (err) => {
-          console.error(err)
-          alert('請開啟您的定位功能！')
+          console.error(err);
+          alert("請開啟您的定位功能！");
         }
-      )
+      );
     },
-    searchNearby(lat = '', lng = '', text = '') {
+    searchNearby(lat = "", lng = "", text = "") {
       let args = {
         keyword: text,
         lng: lng,
         lat: lat,
         rating: this.filterRating,
         price_level: this.filterPriceLevel,
-        sort_by: this.filterSortBy
-      }
-      console.log(args)
-      this.SearchEngine.searchNearby(args)
+        sort_by: this.filterSortBy,
+      };
+      console.log(args);
+      this.SearchEngine.searchNearby(args);
     },
     searchText() {
-      console.log('searchText', this.keyword)
-      this.$router.push(`/search/${this.keyword}`)
-    }
+      console.log("searchText", this.keyword);
+      this.$router.push(`/search/${this.keyword}`).catch(() => {});
+    },
   },
   mounted() {
-    this.keyword = this.$route.params.query
-    this.search(this.keyword)
-    console.log('mounted')
-    bus.$on('search-clear', () => {
-      this.keyword = ''
-    })
+    this.keyword = this.$route.params.query;
+    this.search(this.keyword);
+    console.log("mounted");
+    bus.$on("search-clear", () => {
+      this.keyword = "";
+    });
   },
   created() {
-    this.keyword = this.$route.params.query
+    this.keyword = this.$route.params.query;
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      console.log(vm.keyword, to.params.query)
+      console.log(vm.keyword, to.params.query);
       if (vm.keyword === to.params.query) {
-        return
+        return;
       }
-      console.log('beforeRouteEnter!')
-      vm.keyword = to.params.query
-      vm.search(to.params.query)
-    })
+      console.log("beforeRouteEnter!");
+      vm.keyword = to.params.query;
+      vm.search(to.params.query);
+    });
   },
   beforeRouteUpdate(to, from, next) {
-    console.log('beforeRouteUpdate!', to.params.query)
-    this.search(to.params.query)
-    next()
+    console.log("beforeRouteUpdate!", to.params.query);
+    this.search(to.params.query);
+    next();
   },
   beforeRouteLeave(to, from, next) {
-    console.log('beforeRouteLeave!')
-    if (to.name === 'Home') {
-      this.close(false)
+    console.log("beforeRouteLeave!");
+    if (to.name === "Home") {
+      this.close(false);
     }
-    next()
-  }
-}
+    next();
+  },
+};
 </script>
 
 <style scoped>

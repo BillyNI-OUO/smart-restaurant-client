@@ -280,9 +280,11 @@
           </div>
           <!--<p>{{ placeInfo }}</p>-->
 
-          <v-container mb-3>
+          <v-container mb-3 v-if="hasAnyAspectRatings">
             <v-card>
-              <v-card-title>您覺得這些資訊有用嗎？</v-card-title>
+              <v-card-title>
+                您覺得這些資訊有用嗎？
+              </v-card-title>
 
               <v-card-actions v-if="!rated">
                 <v-spacer></v-spacer>
@@ -312,11 +314,69 @@
             </v-card>
           </v-container>
 
-          <v-divider></v-divider>
+          <v-divider v-if="hasAnyAspectRatings"></v-divider>
+
+          <v-container>
+            <h3 class="mt-5 mb-2">評論</h3>
 
           <v-container style="display: none">
             <h3 class="mt-3 mb-2">評論</h3>
           </v-container>
+
+          <template v-for="item in reviews">
+            <v-container :key="item.id">
+              <v-layout>
+                <v-flex class="pr-3" style="padding-top: 2px;">
+                  <v-avatar
+                    :color="item.rating > 3 ? 'green' : 'red'"
+                    size="42"
+                  >
+                    <v-icon dark v-if="item.rating > 3">
+                      mdi-thumb-up
+                    </v-icon>
+                    <v-icon dark v-else>
+                      mdi-thumb-down
+                    </v-icon>
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs12>
+                  <span
+                    class="grey--text text--darken-1"
+                    style="font-size: 16px;"
+                  >
+                    {{ item.author_name }}
+                  </span>
+                  <br />
+
+                  <span class="yellow--text text--darken-4">
+                    {{ item.rating }}
+                  </span>
+                  <v-rating
+                    style="display: inline; position: relative; top: -2px;"
+                    dense
+                    empty-icon="mdi-star-outline"
+                    full-icon="mdi-star"
+                    half-icon="mdi-star-half-full"
+                    hover
+                    length="5"
+                    :value="item.rating"
+                    readonly
+                    size="18"
+                    background-color="yellow darken-4"
+                    color="yellow darken-4"
+                    half-increments
+                  ></v-rating>
+                  <span class="grey--text"> · {{ toDate(item.time) }} </span>
+                </v-flex>
+              </v-layout>
+
+              <p
+                class="pt-3 pb-0 mb-0"
+                v-html="item.text.replace(/\n/g, '<br>')"
+              ></p>
+            </v-container>
+            <v-divider :key="item.id + '-divider'"></v-divider>
+          </template>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -354,7 +414,6 @@ export default {
     ],
     sort_method: 0,
   }),
-  components: {},
   computed: {
     SearchEngine() {
       return SearchEngine;
@@ -370,6 +429,10 @@ export default {
     },
   },
   methods: {
+    toDate(time) {
+      let d = new Date(time);
+      return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+    },
     load(cid) {
       axios.get(`${window.APIBASE}/detail/${cid}`).then((res) => {
         let data = res.data;
