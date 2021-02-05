@@ -11,10 +11,10 @@ Vue.use(VueAnalytics, {
 
 Vue.config.productionTip = false
 
-//window.APIBASE = 'https://smart-restaurant.duckdns.org'
-window.APIBASE = 'http://127.0.0.1:5000/'
+window.APIBASE = 'https://smart-restaurant.duckdns.org'
+// window.APIBASE = 'http://localhost:5000'
 
-document.body.addEventListener('click', function (evt) {
+document.body.addEventListener('click', function(evt) {
   var nodeName = evt.target.nodeName.toLowerCase()
   if (
     nodeName !== 'input' &&

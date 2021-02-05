@@ -340,8 +340,8 @@ export default {
   },
   methods: {
     toDate(time) {
-      let d = new Date(time);
-      return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+      let d = new Date(time)
+      return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
     },
     load(cid) {
       axios.get(`${window.APIBASE}/detail/${cid}`).then((res) => {
