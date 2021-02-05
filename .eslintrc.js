@@ -17,8 +17,8 @@ module.exports = {
   rules: {
     indent: ['error', 2],
     'linebreak-style': ['warn', 'unix'],
-    quotes: ['warn', 'single'],
-    semi: ['warn', 'never'],
+    quotes: ['error', 'single'],
+    semi: ['error', 'never'],
     'no-unused-vars': ['warn'],
     'vue/no-unused-components': ['warn']
   }
