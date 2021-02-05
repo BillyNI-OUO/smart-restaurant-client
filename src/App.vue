@@ -153,7 +153,7 @@ export default {
     }
   },
   created() {
-    this.$router.push('/')
+    // this.$router.push('/')
   },
   mounted() {
     bus.$on('search-clear', () => {

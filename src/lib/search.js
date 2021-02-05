@@ -1,8 +1,23 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+navigator.geolocation.getCurrentPosition(
+  (res) => {
+    console.log(res)
+    let lat = res.coords.latitude + 0
+    let lng = res.coords.longitude - 0.008755
+    this.searchNearby(lat, lng)
+  },
+  (err) => {
+    console.error(err)
+    alert('請開啟您的定位功能！')
+  }
+)
+
 export default new Vue({
   data: () => ({
+    ready: false,
+
     resultList: [],
     keyword: '',
     lng: null,
@@ -12,6 +27,7 @@ export default new Vue({
     start_from: 0,
     sort_by: null,
     items_per_page: 20,
+
     mapLng: null,
     mapLat: null
   }),
@@ -129,6 +145,16 @@ export default new Vue({
     },
     clear() {
       Vue.set(this, 'resultList', [])
+    },
+    getPosition() {},
+    ready() {
+      return new Promise((resolve) => {
+        if (this.ready === true) {
+          resolve()
+        } else {
+          this.$once('ready', () => resolve())
+        }
+      })
     }
   }
 })
