@@ -1,8 +1,25 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+/*
+navigator.geolocation.getCurrentPosition(
+  (res) => {
+    console.log(res)
+    let lat = res.coords.latitude + 0
+    let lng = res.coords.longitude - 0.008755
+    this.searchNearby(lat, lng)
+  },
+  (err) => {
+    console.error(err)
+    alert('請開啟您的定位功能！')
+  }
+)
+*/
+
 export default new Vue({
   data: () => ({
+    // ready: false,
+
     resultList: [],
     keyword: '',
     lng: null,
@@ -12,6 +29,7 @@ export default new Vue({
     start_from: 0,
     sort_by: null,
     items_per_page: 20,
+
     mapLng: null,
     mapLat: null
   }),
@@ -129,6 +147,58 @@ export default new Vue({
     },
     clear() {
       Vue.set(this, 'resultList', [])
+    },
+    geoPermissionQuery() {
+      new Promise((resolve, reject) => {
+        navigator.permissions.query({ name: 'geolocation' }).then((res) => {
+          if (res.state === 'granted') {
+            this.geoPermissionGranted = true
+            resolve(true)
+          } else {
+            this.geoPermissionGranted = false
+            reject()
+          }
+        })
+      })
+    },
+    getUserPosition() {
+      new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (res) => {
+            let lat = res.coords.latitude + 0
+            let lng = res.coords.longitude - 0.008755
+            this.searchNearby(lat, lng)
+            resolve({ lat, lng })
+          },
+          (err) => {
+            console.error(err)
+            alert('請開啟您的定位功能！')
+            reject(err)
+          }
+        )
+      })
+    },
+
+    isReady() {
+      this.ready = true
+      this.$emit('ready')
+    },
+    wait() {
+      return new Promise((resolve) => {
+        if (this.ready === true) {
+          resolve()
+        } else {
+          this.$once('ready', () => resolve())
+        }
+      })
     }
+  },
+  created() {
+    this.geoPermissionQuery()
+      .then(this.getUserPosition())
+      .then(() => {
+        
+      })
+      .catch(() => {})
   }
 })

@@ -153,7 +153,9 @@ export default {
     }
   },
   created() {
-    this.$router.push('/')
+    if (this.$router.currentRoute.name === 'Search') {
+      this.$router.push('/')
+    }
   },
   mounted() {
     bus.$on('search-clear', () => {
