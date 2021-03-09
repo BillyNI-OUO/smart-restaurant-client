@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+/*
 navigator.geolocation.getCurrentPosition(
   (res) => {
     console.log(res)
@@ -13,10 +14,11 @@ navigator.geolocation.getCurrentPosition(
     alert('請開啟您的定位功能！')
   }
 )
+*/
 
 export default new Vue({
   data: () => ({
-    ready: false,
+    // ready: false,
 
     resultList: [],
     keyword: '',
