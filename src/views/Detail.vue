@@ -5,7 +5,9 @@
         <v-flex
           xs12
           class="detail-cover"
-          style="background-image: url(https://lh5.googleusercontent.com/p/AF1QipNQdMzkcM-kCtxRQ8897hVVqQFWSPQIKf8CpqiB=w408-h306-k-no);"
+          style="
+            background-image: url(https://lh5.googleusercontent.com/p/AF1QipNQdMzkcM-kCtxRQ8897hVVqQFWSPQIKf8CpqiB=w408-h306-k-no);
+          "
         >
           <v-container>
             <v-btn
@@ -91,9 +93,7 @@
                 <v-icon color="primary">mdi-map</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>
-                  在 Google Map 中開啟
-                </v-list-item-title>
+                <v-list-item-title> 在 Google Map 中開啟 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
@@ -177,38 +177,112 @@
             </v-layout>
           </v-container>
 
-          <v-container mb-3 v-if="hasAnyAspectRatings">
-            <v-card>
-              <v-card-title>
-                您覺得這些資訊有用嗎？
-              </v-card-title>
+          <v-divider v-if="hasAnyAspectRatings"></v-divider>
 
-              <v-card-actions v-if="!rated">
-                <v-spacer></v-spacer>
-                <v-btn text @click="feedback(0)">
-                  <v-icon class="mr-1">mdi-emoticon-sad-outline</v-icon>沒有用
+          <v-container v-if="hasAnyAspectRatings">
+            <v-layout v-if="rated === RATED_STATE.NOT_RATED">
+              <v-flex style="padding-top: 3px; font-size: 14px;">
+                您覺得這些資訊準確嗎？
+              </v-flex>
+              <v-flex style="width: 175px; text-align: right;">
+                <v-btn text @click="feedback(0)" small class="mr-3">
+                  不準確
                 </v-btn>
-                <v-btn outlined @click="feedback(1)">
-                  <v-icon class="mr-1">mdi-emoticon-happy-outline</v-icon>有幫助
+                <v-btn outlined @click="feedback(1)" small>
+                  準確
                 </v-btn>
-              </v-card-actions>
+              </v-flex>
+            </v-layout>
 
-              <v-card-actions v-else>
-                <div style="margin: 0 auto; text-align: center;">
-                  <img
-                    v-if="feedbackRating === 1"
-                    style=" width: 200px;"
-                    src="https://chojugiga.com/c/choju54_0031/choju54_0031.png"
-                  />
-                  <img
-                    v-else
-                    style=" width: 200px;"
-                    src="https://chojugiga.com/c/choju51_0035/choju51_0035.png"
-                  />
-                  <p>謝謝你</p>
-                </div>
-              </v-card-actions>
-            </v-card>
+            <v-layout v-if="rated === RATED_STATE.DETAIL" wrap>
+              <v-flex xs12 style="padding-top: 3px; font-size: 14px;">
+                請問您覺得是哪個指標不準確呢？
+              </v-flex>
+              <v-flex xs12 style="" class="mt-2" v-if="hasAnyAspectRatings">
+                <template
+                  v-for="item in aspectRatingsList.filter(
+                    (item) => placeInfo[`${item.key}_rating`]
+                  )"
+                >
+                  <v-layout :key="item.key" class="pt-2">
+                    <v-flex style="text-align: left; margin-top: 3px;">
+                      <span class="pr-1">
+                        {{ item.text }}
+                      </span>
+                      <span
+                        class="grey--text text--darken-1"
+                        style="display: inline; position: relative; top: -1px; font-size: 14px;"
+                      >
+                        原分數
+                      </span>
+                      <span class="yellow--text text--darken-4">
+                        {{ placeInfo[`${item.key}_rating`].toFixed(1) }}
+                      </span>
+                      <v-icon
+                        color="grey--text text--darken-"
+                        style="display: inline; position: relative; top: -2px;"
+                      >
+                        mdi-arrow-right
+                      </v-icon>
+                      <span
+                        class="grey--text text--darken-1"
+                        style="display: inline; position: relative; top: -1px; font-size: 14px;"
+                      >
+                        新分數
+                      </span>
+                      <span class="yellow--text text--darken-4">
+                        {{ feedbackDetail[`${item.key}_rating`].toFixed(1) }}
+                      </span>
+                    </v-flex>
+                    <v-flex style="text-align: right; margin-top: 3px;">
+                      <v-rating
+                        style="display: inline; position: relative; top: -2px;"
+                        dense
+                        empty-icon="mdi-star-outline"
+                        full-icon="mdi-star"
+                        half-icon="mdi-star-half-full"
+                        hover
+                        length="5"
+                        v-model="feedbackDetail[`${item.key}_rating`]"
+                        size="24"
+                        background-color="yellow darken-4"
+                        color="yellow darken-4"
+                        half-increments
+                        v-if="placeInfo[`${item.key}_rating`]"
+                      >
+                      </v-rating>
+                    </v-flex>
+                  </v-layout>
+                </template>
+              </v-flex>
+              <v-flex xs12>
+                <v-textarea
+                  class="mt-4"
+                  label="其他想法或建議"
+                  outlined
+                  rows="2"
+                  v-model="feedbackDetail.memo"
+                ></v-textarea>
+              </v-flex>
+              <v-flex xs12 style="text-align: right;">
+                <v-btn text @click="rated = RATED_STATE.RATED" class="mr-3">
+                  取消
+                </v-btn>
+                <v-btn text @click="sendFeedbackDetail()" outlined>
+                  送出
+                </v-btn>
+              </v-flex>
+            </v-layout>
+
+            <v-layout v-if="rated === RATED_STATE.RATED">
+              <div style="margin: 0 auto; text-align: center">
+                <img
+                  style="width: 150px"
+                  src="https://chojugiga.com/c/choju54_0031/choju54_0031.png"
+                />
+                <p>謝謝你</p>
+              </div>
+            </v-layout>
           </v-container>
 
           <v-divider v-if="hasAnyAspectRatings"></v-divider>
@@ -248,12 +322,8 @@
                     :color="item.rating > 3 ? 'green' : 'red'"
                     size="42"
                   >
-                    <v-icon dark v-if="item.rating > 3">
-                      mdi-thumb-up
-                    </v-icon>
-                    <v-icon dark v-else>
-                      mdi-thumb-down
-                    </v-icon>
+                    <v-icon dark v-if="item.rating > 3"> mdi-thumb-up </v-icon>
+                    <v-icon dark v-else> mdi-thumb-down </v-icon>
                   </v-avatar>
                 </v-flex>
                 <v-flex xs12>
@@ -294,6 +364,10 @@
             </v-container>
             <v-divider :key="item.id + '-divider'"></v-divider>
           </template>
+
+          <template v-if="reviews.length === 0">
+            <p style="text-align: center;" class="mt-3">沒有評論</p>
+          </template>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -311,14 +385,32 @@ import {
 import axios from 'axios'
 import Vue from 'vue'
 
+const feedbackDetailDefault = {
+  food_rating: null,
+  service_rating: null,
+  atmosphere_rating: null,
+  cleanliness_rating: null,
+  value_rating: null,
+  memo: ''
+}
+
+const RATED_STATE = {
+  NOT_RATED: 0,
+  DETAIL: 1,
+  RATED: 2
+}
+
 export default {
   name: 'Detail',
   data: () => ({
     cid: '',
     placeInfo: {},
-    rated: false,
-    feedbackRating: 1,
     reviews: [],
+
+    rated: RATED_STATE.NOT_RATED,
+    feedbackRating: 1,
+    feedbackDetail: Object.assign({}, feedbackDetailDefault),
+
     reviewsAspect: 'all',
     reviewsAspectList: [
       { text: '全部', value: 'all' },
@@ -337,18 +429,10 @@ export default {
     ]
   }),
   computed: {
-    SearchEngine() {
-      return SearchEngine
-    },
-    aspectRatingsDict() {
-      return aspectRatingsDict
-    },
-    aspectRatingsList() {
-      return aspectRatingsList
-    },
-    aspectRatingDescription() {
-      return aspectRatingDescription
-    },
+    SearchEngine: () => SearchEngine,
+    aspectRatingsDict: () => aspectRatingsDict,
+    aspectRatingsList: () => aspectRatingsList,
+    aspectRatingDescription: () => aspectRatingDescription,
     hasAnyAspectRatings() {
       for (let { key } of this.aspectRatingsList) {
         if (this.placeInfo[key + '_count'] > 0) {
@@ -356,7 +440,8 @@ export default {
         }
       }
       return false
-    }
+    },
+    RATED_STATE: () => RATED_STATE
   },
   methods: {
     toDate(time) {
@@ -370,7 +455,7 @@ export default {
           console.error(data)
           return
         }
-        this.rated = false
+        this.rated = RATED_STATE.NOT_RATED
         this.reviewsAspect = 'all'
         this.reviewsSortBy = 'importance'
         Vue.set(this, 'placeInfo', data)
@@ -393,7 +478,7 @@ export default {
     close() {
       bus.$emit('search-clear')
       this.SearchEngine.clear()
-      this.rated = false
+      this.rated = RATED_STATE.NOT_RATED
       this.reviewsAspect = 'all'
       this.reviewsSortBy = 'importance'
       Vue.set(this, 'reviews', [])
@@ -411,8 +496,39 @@ export default {
             console.error(data)
             return
           }
-          this.rated = true
+          this.rated = rating === 1 ? RATED_STATE.RATED : RATED_STATE.DETAIL
           this.feedbackRating = rating
+
+          if (this.hasAnyAspectRatings) {
+            Vue.set(
+              this,
+              'feedbackDetail',
+              Object.assign({}, feedbackDetailDefault)
+            )
+            for (let { key } of this.aspectRatingsList) {
+              this.feedbackDetail[`${key}_rating`] = this.placeInfo[
+                `${key}_rating`
+              ]
+            }
+          }
+        })
+    },
+    sendFeedbackDetail() {
+      if (!this.cid) {
+        return
+      }
+      this.rated = RATED_STATE.RATED
+      axios
+        .post(
+          `${window.APIBASE}/feedback/detail/${this.cid}`,
+          this.feedbackDetail
+        )
+        .then((res) => {
+          let data = res.data
+          if (data.error) {
+            console.error(data)
+            return
+          }
         })
     }
   },

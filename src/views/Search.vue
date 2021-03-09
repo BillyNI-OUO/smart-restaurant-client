@@ -79,12 +79,20 @@
                   xs4
                   mr-3
                   class="search-item-img"
-                  style="display: none; background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);"
+                  style="
+                    display: none;
+                    background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);
+                  "
                 >
                 </v-flex>
                 <v-flex xs12 pt-3 class="search-item-content">
                   <h3
-                    style="height: 28px; overflow: hidden; text-overflow: ellipse; text-wrap: no-wrap;"
+                    style="
+                      height: 28px;
+                      overflow: hidden;
+                      text-overflow: ellipse;
+                      text-wrap: no-wrap;
+                    "
                   >
                     {{ item.name }}
                   </h3>
