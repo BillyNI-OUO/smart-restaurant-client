@@ -75,16 +75,18 @@
               style="cursor: pointer;"
             >
               <v-layout>
-                <v-flex
-                  xs4
-                  mr-3
-                  class="search-item-img"
-                  style="
-                    display: none;
-                    background-image: url(https://lh5.googleusercontent.com/p/AF1QipNUa5VRyTSXLuyL0eTX_4Et2ixZp_Gs0uaf3Wf3=w122-h92-k-no);
-                  "
-                >
+                <v-flex xs4 mr-3 class="search-item-img">
+                  <placeholder-image
+                    weight="100%"
+                    height="100%"
+                    :src="`${APIBASE}/img/place_header/${item.cid}.jpg`"
+                    :error-src="
+                      'https://post.healthline.com/wp-content/uploads/2020/09/healthy-eating-ingredients-1200x628-facebook-1200x628.jpg'
+                    "
+                    style="background-size: cover;"
+                  ></placeholder-image>
                 </v-flex>
+
                 <v-flex xs12 pt-3 class="search-item-content">
                   <h3
                     style="
@@ -168,6 +170,7 @@ import {
   aspectRatingsDict,
   aspectRatingDescription
 } from '../lib/utils'
+import PlaceholderImage from '../components/PlaceholderImage.vue'
 
 // 定义mixin, 用于记录scroll位置
 const keepScrollTop = {
@@ -195,6 +198,7 @@ const keepScrollTop = {
 export default {
   name: 'Search',
   mixins: [keepScrollTop],
+  components: { PlaceholderImage },
   data: () => ({
     text: '',
     keyword: '',
@@ -226,20 +230,12 @@ export default {
       { text: '價值評價排序', value: 'value_rating' }
     ]
   }),
-  components: {},
   computed: {
-    SearchEngine() {
-      return SearchEngine
-    },
-    aspectRatingsDict() {
-      return aspectRatingsDict
-    },
-    aspectRatingsList() {
-      return aspectRatingsList
-    },
-    aspectRatingDescription() {
-      return aspectRatingDescription
-    }
+    APIBASE: () => window.APIBASE,
+    SearchEngine: () => SearchEngine,
+    aspectRatingsDict: () => aspectRatingsDict,
+    aspectRatingsList: () => aspectRatingsList,
+    aspectRatingDescription: () => aspectRatingDescription
   },
   methods: {
     blur() {
@@ -362,7 +358,6 @@ export default {
 
 .search-item-img {
   height: 120px;
-  background-size: cover;
 }
 .search-item-content {
   height: 120px;

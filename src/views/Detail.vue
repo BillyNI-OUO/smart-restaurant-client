@@ -1,33 +1,35 @@
 <template>
   <v-layout wrap class="panel detail" style="padding-bottom: 64px;">
     <v-flex xs12 pb-3>
+      <placeholder-image
+        :aspect-ratio="16 / 8"
+        weight="100%"
+        :src="imageFilename"
+        :error-src="
+          'https://post.healthline.com/wp-content/uploads/2020/09/healthy-eating-ingredients-1200x628-facebook-1200x628.jpg'
+        "
+      >
+        <v-container>
+          <v-btn
+            depressed
+            @click="$router.back()"
+            style="background-color: #ffffffdd;"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+            返回上一頁
+          </v-btn>
+          <v-btn
+            depressed
+            @click="close"
+            style="background-color: #ffffffdd; float: right;"
+          >
+            <v-icon>mdi-close</v-icon>
+            關閉
+          </v-btn>
+        </v-container>
+      </placeholder-image>
+
       <v-layout wrap>
-        <v-flex
-          xs12
-          class="detail-cover"
-          style="
-            background-image: url(https://lh5.googleusercontent.com/p/AF1QipNQdMzkcM-kCtxRQ8897hVVqQFWSPQIKf8CpqiB=w408-h306-k-no);
-          "
-        >
-          <v-container>
-            <v-btn
-              depressed
-              @click="$router.back()"
-              style="background-color: #ffffffdd;"
-            >
-              <v-icon>mdi-arrow-left</v-icon>
-              返回上一頁
-            </v-btn>
-            <v-btn
-              depressed
-              @click="close"
-              style="background-color: #ffffffdd; float: right;"
-            >
-              <v-icon>mdi-close</v-icon>
-              關閉
-            </v-btn>
-          </v-container>
-        </v-flex>
         <v-flex xs12 v-if="placeInfo">
           <v-container>
             <h2>{{ placeInfo.name }}</h2>
@@ -196,7 +198,10 @@
 
             <v-layout v-if="rated === RATED_STATE.DETAIL" wrap>
               <v-flex xs12 style="padding-top: 3px; font-size: 14px;">
-                請問您覺得是哪個指標不準確呢？
+                <h3 class="mt-3 mb-2">請問您覺得是哪個指標不準確呢？</h3>
+                <span class="grey--text text--darken-1">
+                  請透過右方的星星來調整您認為的分數
+                </span>
               </v-flex>
               <v-flex xs12 style="" class="mt-2" v-if="hasAnyAspectRatings">
                 <template
@@ -228,7 +233,7 @@
                         class="grey--text text--darken-1"
                         style="display: inline; position: relative; top: -1px; font-size: 14px;"
                       >
-                        新分數
+                        您認為
                       </span>
                       <span class="yellow--text text--darken-4">
                         {{ feedbackDetail[`${item.key}_rating`].toFixed(1) }}
@@ -382,6 +387,7 @@ import {
   aspectRatingsDict,
   aspectRatingDescription
 } from '../lib/utils'
+import PlaceholderImage from '../components/PlaceholderImage.vue'
 import axios from 'axios'
 import Vue from 'vue'
 
@@ -402,6 +408,7 @@ const RATED_STATE = {
 
 export default {
   name: 'Detail',
+  components: { PlaceholderImage },
   data: () => ({
     cid: '',
     placeInfo: {},
@@ -429,6 +436,7 @@ export default {
     ]
   }),
   computed: {
+    APIBASE: () => window.APIBASE,
     SearchEngine: () => SearchEngine,
     aspectRatingsDict: () => aspectRatingsDict,
     aspectRatingsList: () => aspectRatingsList,
@@ -441,7 +449,10 @@ export default {
       }
       return false
     },
-    RATED_STATE: () => RATED_STATE
+    RATED_STATE: () => RATED_STATE,
+    imageFilename() {
+      return `${this.APIBASE}/img/place_header/${this.cid}.jpg`
+    }
   },
   methods: {
     toDate(time) {
