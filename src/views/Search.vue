@@ -75,7 +75,7 @@
               style="cursor: pointer;"
             >
               <v-layout>
-                <v-flex xs4 mr-3 class="search-item-img">
+                <v-flex xs4 pr-3 class="search-item-img">
                   <placeholder-image
                     weight="100%"
                     height="100%"
@@ -87,7 +87,7 @@
                   ></placeholder-image>
                 </v-flex>
 
-                <v-flex xs12 pt-3 class="search-item-content">
+                <v-flex xs8 pt-3 class="search-item-content">
                   <h3
                     style="
                       height: 28px;
@@ -171,29 +171,7 @@ import {
   aspectRatingDescription
 } from '../lib/utils'
 import PlaceholderImage from '../components/PlaceholderImage.vue'
-
-// 定义mixin, 用于记录scroll位置
-const keepScrollTop = {
-  mounted() {
-    // 获取组件根元素Dom
-    const page = this.$el
-    // 绑定事件,滚动时,储存位置到this.scrollTop
-    page.addEventListener('scroll', () => {
-      this.scrollTop = page.scrollTop
-    })
-  },
-  // activated生命钩子在keep-alive被激活时调用
-  activated() {
-    // 如果曾滚动过,则还原位置
-    if (this.scrollTop) {
-      const page = this.$el
-      page.scrollTop = this.scrollTop
-    }
-  },
-  // deactivated生命钩子在keep-alive被停用时调用
-  // 如果onScroll绑定在window之类的元素上,记得用removeEventListener删除事件
-  deactivated() {}
-}
+import keepScrollTop from '../mixins/keepScrollTop'
 
 export default {
   name: 'Search',
