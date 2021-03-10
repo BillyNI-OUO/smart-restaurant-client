@@ -7,7 +7,7 @@
         <map-loader
           :markers="markers"
           :map-config="mapConfig"
-          apiKey="AIzaSyBz512sd4Re60aeviBUjHX8X03lAi3UZBs"
+          apiKey="AIzaSyAgXa8SXxQA1hrWVUU8p-G351swReg1-5o"
         >
         </map-loader>
 
