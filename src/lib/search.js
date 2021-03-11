@@ -73,6 +73,13 @@ export default new Vue({
         this.sort_by = args.sort_by
         this.start_from = data.start_from
         this.items_per_page = data.items_per_page
+
+        this.$ga.event({
+          eventCategory: 'search',
+          eventAction: 'searchDirect',
+          eventLabel: 'direct',
+          eventValue: data
+        })
       })
     },
     searchNearby(args) {
@@ -112,6 +119,13 @@ export default new Vue({
         this.sort_by = args.sort_by
         this.start_from = data.start_from
         this.items_per_page = data.items_per_page
+
+        this.$ga.event({
+          eventCategory: 'search',
+          eventAction: 'searchNearby',
+          eventLabel: 'nearby',
+          eventValue: data
+        })
       })
     },
     nextPage() {
@@ -196,9 +210,7 @@ export default new Vue({
   created() {
     this.geoPermissionQuery()
       .then(this.getUserPosition())
-      .then(() => {
-        
-      })
+      .then(() => {})
       .catch(() => {})
   }
 })
