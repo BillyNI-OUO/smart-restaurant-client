@@ -75,19 +75,7 @@
               style="cursor: pointer;"
             >
               <v-layout>
-                <v-flex xs4 pr-3 class="search-item-img">
-                  <placeholder-image
-                    weight="100%"
-                    height="100%"
-                    :src="`${APIBASE}/img/place_header/${item.cid}.jpg`"
-                    :error-src="
-                      'https://post.healthline.com/wp-content/uploads/2020/09/healthy-eating-ingredients-1200x628-facebook-1200x628.jpg'
-                    "
-                    style="background-size: cover;"
-                  ></placeholder-image>
-                </v-flex>
-
-                <v-flex xs8 pt-3 class="search-item-content">
+                <v-flex xs8 pr-2 pt-3 class="search-item-content">
                   <h3
                     style="
                       height: 28px;
@@ -151,6 +139,18 @@
                     style="height: 24px; overflow: hidden;"
                     v-html="aspectRatingDescription(item, true, filterSortBy)"
                   ></div>
+                </v-flex>
+
+                <v-flex xs4 pt-2 pb-2 class="search-item-img">
+                  <placeholder-image
+                    weight="100%"
+                    height="100%"
+                    :src="`${APIBASE}/img/place_header/${item.cid}.jpg`"
+                    :error-src="
+                      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+                    "
+                    style="background-size: cover; border-radius: 4px;"
+                  ></placeholder-image>
                 </v-flex>
               </v-layout>
               <v-divider></v-divider>
