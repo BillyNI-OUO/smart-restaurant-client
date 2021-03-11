@@ -75,7 +75,7 @@
               style="cursor: pointer;"
             >
               <v-layout>
-                <v-flex xs12 pr-2 pt-3 class="search-item-content">
+                <v-flex xs8 pr-2 pt-3 class="search-item-content">
                   <h3
                     style="
                       height: 28px;
