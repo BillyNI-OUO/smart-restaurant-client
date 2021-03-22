@@ -208,9 +208,11 @@ export default new Vue({
     }
   },
   created() {
+    /*
     this.geoPermissionQuery()
       .then(this.getUserPosition())
       .then(() => {})
-      .catch(() => {})
+      .catch(() => { })
+    */
   }
 })
