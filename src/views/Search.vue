@@ -156,6 +156,18 @@
               <v-divider></v-divider>
             </v-flex>
           </template>
+
+          <v-flex>
+            <v-container pt-3 style="text-align: center;">
+              <template v-if="!reportedMissingPlace">
+                <v-btn outlined @click="feedbackReportMissingPlace">找不到餐廳嗎？</v-btn>
+              </template>
+
+              <template v-else>
+                <p>感謝您的回報</p>
+              </template>
+            </v-container>
+          </v-flex>
         </v-layout>
       </v-flex>
     </v-layout>
@@ -163,6 +175,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import bus from '../lib/bus'
 import SearchEngine from '../lib/search'
 import {
@@ -206,7 +219,9 @@ export default {
       { text: '氣氛評價排序', value: 'atmosphere_rating' },
       { text: '清潔評價排序', value: 'cleanliness_rating' },
       { text: '價值評價排序', value: 'value_rating' }
-    ]
+    ],
+
+    reportedMissingPlace: false
   }),
   computed: {
     APIBASE: () => window.APIBASE,
@@ -230,6 +245,7 @@ export default {
         this.$router.push('/')
       }
       this.SearchEngine.clear()
+      this.reportedMissingPlace = false
       blur()
     },
     search(text) {
@@ -289,6 +305,28 @@ export default {
     searchText() {
       console.log('searchText', this.keyword)
       this.$router.push(`/search/${this.keyword}`)
+    },
+    feedbackReportMissingPlace() {
+      if (!this.keyword) {
+        return
+      }
+
+      this.reportedMissingPlace = true
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${window.APIBASE}/feedback/missing_place`,
+            {'name': this.keyword})
+          .then((res) => {
+            let data = res.data
+            if (data.error) {
+              console.error(data)
+              reject(data)
+              return
+            }
+          
+            resolve()
+          })
+      })
     }
   },
   mounted() {
