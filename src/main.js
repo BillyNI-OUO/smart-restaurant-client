@@ -12,7 +12,7 @@ Vue.use(VueAnalytics, {
 Vue.config.productionTip = false
 
 window.APIBASE = 'https://smart-restaurant.duckdns.org'
-// window.APIBASE = 'http://localhost:5000'
+// window.APIBASE = 'http://localhost'
 
 document.body.addEventListener('click', function(evt) {
   var nodeName = evt.target.nodeName.toLowerCase()
