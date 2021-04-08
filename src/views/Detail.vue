@@ -364,6 +364,7 @@
 
               <p
                 class="pt-3 pb-0 mb-0"
+                style="word-break: break-word;"
                 v-html="item.text.replace(/\n/g, '<br>')"
               ></p>
             </v-container>
