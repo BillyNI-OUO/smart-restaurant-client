@@ -71,7 +71,10 @@
             <v-flex
               xs12
               :key="index"
-              @click="$router.push(`/detail/${item.cid}`)"
+              @click="
+                SearchEngine.$emit(`marker-highlight-${item.cid}`)
+                $router.push(`/detail/${item.cid}`)
+              "
               style="cursor: pointer;"
             >
               <v-layout>
@@ -160,7 +163,9 @@
           <v-flex>
             <v-container pt-3 style="text-align: center;">
               <template v-if="!reportedMissingPlace">
-                <v-btn outlined @click="feedbackReportMissingPlace">找不到餐廳嗎？</v-btn>
+                <v-btn outlined @click="feedbackReportMissingPlace"
+                  >找不到餐廳嗎？</v-btn
+                >
               </template>
 
               <template v-else>
@@ -314,8 +319,9 @@ export default {
       this.reportedMissingPlace = true
       return new Promise((resolve, reject) => {
         axios
-          .post(`${window.APIBASE}/feedback/missing_place`,
-            {'name': this.keyword})
+          .post(`${window.APIBASE}/feedback/missing_place`, {
+            name: this.keyword
+          })
           .then((res) => {
             let data = res.data
             if (data.error) {
@@ -323,7 +329,7 @@ export default {
               reject(data)
               return
             }
-          
+
             resolve()
           })
       })

@@ -51,6 +51,7 @@ export default {
       google: null,
       map: null,
       markersInst: [],
+      markersIds: [],
       adjustLat: 0,
       adjustLng: 0.008755
     }
@@ -104,6 +105,10 @@ export default {
         inst.setMap(null)
       }
       this.markersInst.splice(0)
+
+      for (let id of this.markersIds) {
+        SearchEngine.$off(`marker-highlight-${id}`)
+      }
     },
 
     addMarker(args) {
@@ -170,6 +175,13 @@ export default {
         this.$router.push(`/detail/${args.id}`)
         // this.setCenter(args.position)
       })
+
+      SearchEngine.$on(`marker-highlight-${args.id}`, () => {
+        marker.setAnimation(this.google.maps.Animation.BOUNCE)
+        marker.setAnimation(null)
+      })
+
+      this.markersIds.push(args.id)
     },
 
     setCenter(position) {

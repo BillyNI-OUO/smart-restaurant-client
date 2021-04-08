@@ -28,7 +28,7 @@ export default new Vue({
     rating: 0,
     start_from: 0,
     sort_by: null,
-    items_per_page: 20,
+    items_per_page: 40,
 
     mapLng: null,
     mapLat: null
