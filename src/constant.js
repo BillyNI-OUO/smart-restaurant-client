@@ -1,5 +1,5 @@
-// 'https://smart-restaurant.duckdns.org'
-export const APIBASE = 'http://localhost'
+// 'http://localhost'
+export const APIBASE = 'https://smart-restaurant.duckdns.org'
 
 export const ASPECTS = [
   { key: 'food', title: '食物' },
