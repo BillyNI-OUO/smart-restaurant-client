@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
+import { APIBASE } from '../constant'
 
 /*
 navigator.geolocation.getCurrentPosition(
@@ -35,12 +36,16 @@ export default new Vue({
   }),
   methods: {
     search(args) {
-      let url = `${window.APIBASE}/search?keyword=${args.keyword}`
+      console.log(args)
+      let url = `${APIBASE}/search?keyword=${args.keyword}`
       if (this.mapLat && this.mapLng) {
         url += `&lat=${this.mapLat}&lng=${this.mapLng}`
       }
       if ('price_level' in args) {
         url += `&price_level=${args.price_level}`
+      }
+      if ('filter_by' in args) {
+        url += `&filter_by=${args.filter_by}`
       }
       if ('rating' in args) {
         url += `&rating=${args.rating}`
@@ -83,14 +88,17 @@ export default new Vue({
       })
     },
     searchNearby(args) {
-      let url = `${window.APIBASE}/search?lat=${args.lat}&lng=${args.lng}`
+      let url = `${APIBASE}/search?lat=${args.lat}&lng=${args.lng}`
       if ('price_level' in args) {
         url += `&price_level=${args.price_level}`
       }
-      if ('rating' in args) {
+      if ('rating' in args && args['rating']) {
         url += `&rating=${args.rating}`
       }
-      if ('sort_by' in args) {
+      if ('filter_by' in args && args['filter_by']) {
+        url += `&filter_by=${args.filter_by}`
+      }
+      if ('sort_by' in args && args['sort_by']) {
         url += `&sort_by=${args.sort_by}`
       }
       if ('items_per_page' in args) {
@@ -130,7 +138,7 @@ export default new Vue({
     },
     nextPage() {
       let url =
-        `${window.APIBASE}/search?` +
+        `${APIBASE}/search?` +
         `start_from=${this.start_from + this.items_per_page}` +
         `&items_per_page=${this.items_per_page}`
 

@@ -39,15 +39,17 @@
           rounded
         ></v-text-field>
         <div class="mt-3">
-          <v-btn @click="searchText('附近的餐廳')" small rounded class="mr-2">
-            附近的餐廳
-          </v-btn>
-          <v-btn @click="searchText('氣氛好的餐廳')" small rounded class="mr-2">
-            氣氛好
-          </v-btn>
-          <v-btn @click="searchText('食物好的餐廳')" small rounded class="mr-2">
-            食物好
-          </v-btn>
+          <template v-for="item in QUICK_DIRECT">
+            <v-btn
+              @click="searchText(item.searchText)"
+              small
+              rounded
+              class="mr-2"
+              :key="item.text"
+            >
+              {{ item.text }}
+            </v-btn>
+          </template>
         </div>
       </div>
 
@@ -80,6 +82,7 @@ import MapLoader from './components/MapLoader.vue'
 import SearchEngine from './lib/search'
 import bus from './lib/bus'
 import { aspectRatingDescription } from './lib/utils'
+import { QUICK_DIRECT } from './constant'
 
 export default {
   name: 'App',
@@ -107,6 +110,7 @@ export default {
     showSearch: true
   }),
   computed: {
+    QUICK_DIRECT: () => QUICK_DIRECT,
     showMapSearchToggle() {
       return this.$vuetify.breakpoint.mobile && this.$route.name === 'Search'
     },

@@ -1,14 +1,8 @@
-export const aspectRatingsList = [
-  { text: '食物', key: 'food' },
-  { text: '服務', key: 'service' },
-  { text: '氣氛', key: 'atmosphere' },
-  { text: '清潔', key: 'cleanliness' },
-  { text: '價值', key: 'value' }
-]
+import { ASPECTS } from '../constant'
 
 export const aspectRatingsDict = (() => {
   let dict = {}
-  aspectRatingsList.map((v) => (dict[v.key] = v.text))
+  ASPECTS.map((v) => (dict[v.key] = v.title))
   return dict
 })()
 
@@ -67,7 +61,7 @@ export function aspectRatingDescription(placeInfo, rich = false) {
     }
   }
 
-  let aspectKeyRatingList = aspectRatingsList.map((v) => ({
+  let aspectKeyRatingList = ASPECTS.map((v) => ({
     key: v.key,
     rating: placeInfo[`${v.key}_rating`],
     count: placeInfo[`${v.key}_count`]

@@ -135,7 +135,7 @@
 
             <v-layout wrap>
               <v-flex
-                v-for="item in aspectRatingsList.filter(
+                v-for="item in ASPECTS.filter(
                   (item) => placeInfo[`${item.key}_rating`]
                 )"
                 :key="item.key"
@@ -205,7 +205,7 @@
               </v-flex>
               <v-flex xs12 style="" class="mt-2" v-if="hasAnyAspectRatings">
                 <template
-                  v-for="item in aspectRatingsList.filter(
+                  v-for="item in ASPECTS.filter(
                     (item) => placeInfo[`${item.key}_rating`]
                   )"
                 >
@@ -383,22 +383,17 @@
 <script>
 import bus from '../lib/bus'
 import SearchEngine from '../lib/search'
-import {
-  aspectRatingsList,
-  aspectRatingsDict,
-  aspectRatingDescription
-} from '../lib/utils'
+import { aspectRatingsDict, aspectRatingDescription } from '../lib/utils'
 import PlaceholderImage from '../components/PlaceholderImage.vue'
 import axios from 'axios'
 import Vue from 'vue'
+import { APIBASE, ASPECTS } from '../constant'
 
-const feedbackDetailDefault = {
-  food_rating: null,
-  service_rating: null,
-  atmosphere_rating: null,
-  cleanliness_rating: null,
-  value_rating: null,
+let feedbackDetailDefault = {
   memo: ''
+}
+for (let { key } of ASPECTS) {
+  feedbackDetailDefault[key + '_rating'] = null
 }
 
 const RATED_STATE = {
@@ -422,11 +417,8 @@ export default {
     reviewsAspect: 'all',
     reviewsAspectList: [
       { text: '全部', value: 'all' },
-      { text: '食物', value: 'food' },
-      { text: '服務', value: 'service' },
-      { text: '氣氛', value: 'atmosphere' },
-      { text: '清潔', value: 'cleanliness' },
-      { text: '價值', value: 'value' }
+
+      ...ASPECTS.map((v) => ({ text: v.title, value: v.key }))
     ],
     reviewsSortBy: 'importance',
     reviewsSortByList: [
@@ -437,13 +429,13 @@ export default {
     ]
   }),
   computed: {
-    APIBASE: () => window.APIBASE,
+    APIBASE: () => APIBASE,
+    ASPECTS: () => ASPECTS,
     SearchEngine: () => SearchEngine,
     aspectRatingsDict: () => aspectRatingsDict,
-    aspectRatingsList: () => aspectRatingsList,
     aspectRatingDescription: () => aspectRatingDescription,
     hasAnyAspectRatings() {
-      for (let { key } of this.aspectRatingsList) {
+      for (let { key } of this.ASPECTS) {
         if (this.placeInfo[key + '_count'] > 0) {
           return true
         }
@@ -461,7 +453,7 @@ export default {
       return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
     },
     load(cid) {
-      axios.get(`${window.APIBASE}/detail/${cid}`).then((res) => {
+      axios.get(`${this.APIBASE}/detail/${cid}`).then((res) => {
         let data = res.data
         if (data.error) {
           console.error(data)
@@ -484,7 +476,7 @@ export default {
     },
     loadReviews() {
       Vue.set(this, 'reviews', [])
-      let url = `${window.APIBASE}/reviews/${this.cid}?aspect=${this.reviewsAspect}&sort_by=${this.reviewsSortBy}`
+      let url = `${this.APIBASE}/reviews/${this.cid}?aspect=${this.reviewsAspect}&sort_by=${this.reviewsSortBy}`
       axios.get(url).then((res) => {
         let data = res.data
         if (data.error) {
@@ -508,7 +500,7 @@ export default {
         return
       }
       axios
-        .get(`${window.APIBASE}/feedback/place/${this.cid}/${rating}`)
+        .get(`${this.APIBASE}/feedback/place/${this.cid}/${rating}`)
         .then((res) => {
           let data = res.data
           if (data.error) {
@@ -524,7 +516,7 @@ export default {
               'feedbackDetail',
               Object.assign({}, feedbackDetailDefault)
             )
-            for (let { key } of this.aspectRatingsList) {
+            for (let { key } of this.ASPECTS) {
               this.feedbackDetail[`${key}_rating`] = this.placeInfo[
                 `${key}_rating`
               ]
@@ -546,7 +538,7 @@ export default {
       this.rated = RATED_STATE.RATED
       axios
         .post(
-          `${window.APIBASE}/feedback/detail/${this.cid}`,
+          `${this.APIBASE}/feedback/detail/${this.cid}`,
           this.feedbackDetail
         )
         .then((res) => {

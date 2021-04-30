@@ -26,8 +26,8 @@
             <v-layout>
               <v-flex xs4 pr-1>
                 <v-select
-                  v-model="filterRating"
-                  :items="ratingItems"
+                  v-model="filterFilterBy"
+                  :items="filterByItems"
                   dense
                   outlined
                   hide-details
@@ -183,13 +183,10 @@
 import axios from 'axios'
 import bus from '../lib/bus'
 import SearchEngine from '../lib/search'
-import {
-  aspectRatingsList,
-  aspectRatingsDict,
-  aspectRatingDescription
-} from '../lib/utils'
+import { aspectRatingsDict, aspectRatingDescription } from '../lib/utils'
 import PlaceholderImage from '../components/PlaceholderImage.vue'
 import keepScrollTop from '../mixins/keepScrollTop'
+import { APIBASE, ASPECTS } from '../constant'
 
 export default {
   name: 'Search',
@@ -198,6 +195,8 @@ export default {
   data: () => ({
     text: '',
     keyword: '',
+
+    // deprecated
     ratingItems: [
       { text: '評價', value: 0 },
       { text: '1⭐+', value: 1 },
@@ -207,6 +206,15 @@ export default {
       { text: '4.5⭐+', value: 4.5 }
     ],
     filterRating: 0,
+
+    filterByItems: [
+      { text: '篩選', value: '' },
+      { text: '總分 4⭐+', value: 'rating' },
+
+      ...ASPECTS.map((v) => ({ text: `${v.title} 4⭐+`, value: v.key }))
+    ],
+    filterFilterBy: '',
+
     priceLevelItems: [
       { text: '價格', value: 0 },
       { text: '$+', value: 1 },
@@ -215,24 +223,19 @@ export default {
       { text: '$$$$+', value: 4 }
     ],
     filterPriceLevel: 0,
+
     filterSortBy: 'distance',
     sortByList: [
       { text: '距離排序', value: 'distance' },
-      { text: '評價排序', value: 'rating' },
-      { text: '食物評價排序', value: 'food_rating' },
-      { text: '服務評價排序', value: 'service_rating' },
-      { text: '氣氛評價排序', value: 'atmosphere_rating' },
-      { text: '清潔評價排序', value: 'cleanliness_rating' },
-      { text: '價值評價排序', value: 'value_rating' }
+      { text: '評價排序', value: 'rating' }
     ],
 
     reportedMissingPlace: false
   }),
   computed: {
-    APIBASE: () => window.APIBASE,
+    APIBASE: () => APIBASE,
     SearchEngine: () => SearchEngine,
     aspectRatingsDict: () => aspectRatingsDict,
-    aspectRatingsList: () => aspectRatingsList,
     aspectRatingDescription: () => aspectRatingDescription
   },
   methods: {
@@ -243,6 +246,7 @@ export default {
       this.keyword = ''
       this.filterRating = 0
       this.filterPriceLevel = 0
+      this.filterFilterBy = ''
       this.filterSortBy = 'distance'
       bus.$emit('search-clear')
       this.blur()
@@ -261,22 +265,26 @@ export default {
       this.blur()
       this.SearchEngine.clear()
       console.log('perform searching.', text)
+
+      for (let { key, title } of ASPECTS) {
+        if (text === title + '好的餐廳') {
+          this.filterFilterBy = key
+          this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
+          return
+        }
+      }
+
       if (text === '附近的餐廳') {
         this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
       } else if (text === '我附近的餐廳') {
         this.searchNearbyGPS()
-      } else if (text === '氣氛好的餐廳') {
-        this.filterSortBy = 'atmosphere_rating'
-        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-      } else if (text === '食物好的餐廳') {
-        this.filterSortBy = 'food_rating'
-        this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
       } else {
         this.SearchEngine.search({
           keyword: text,
           rating: this.filterRating,
           price_level: this.filterPriceLevel,
-          sort_by: this.filterSortBy
+          sort_by: this.filterSortBy,
+          filter_by: this.filterFilterBy
         })
       }
     },
@@ -301,10 +309,10 @@ export default {
         lng: lng,
         lat: lat,
         rating: this.filterRating,
+        filter_by: this.filterFilterBy,
         price_level: this.filterPriceLevel,
         sort_by: this.filterSortBy
       }
-      console.log(args)
       this.SearchEngine.searchNearby(args)
     },
     searchText() {
@@ -319,7 +327,7 @@ export default {
       this.reportedMissingPlace = true
       return new Promise((resolve, reject) => {
         axios
-          .post(`${window.APIBASE}/feedback/missing_place`, {
+          .post(`${this.APIBASE}/feedback/missing_place`, {
             name: this.keyword
           })
           .then((res) => {
@@ -338,7 +346,6 @@ export default {
   mounted() {
     this.keyword = this.$route.params.query
     this.search(this.keyword)
-    console.log('mounted')
     bus.$on('search-clear', () => {
       this.keyword = ''
     })
@@ -348,22 +355,18 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      console.log(vm.keyword, to.params.query)
       if (vm.keyword === to.params.query) {
         return
       }
-      console.log('beforeRouteEnter!')
       vm.keyword = to.params.query
       vm.search(to.params.query)
     })
   },
   beforeRouteUpdate(to, from, next) {
-    console.log('beforeRouteUpdate!', to.params.query)
     this.search(to.params.query)
     next()
   },
   beforeRouteLeave(to, from, next) {
-    console.log('beforeRouteLeave!')
     if (to.name === 'Home') {
       this.close(false)
     }
