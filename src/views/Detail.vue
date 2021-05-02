@@ -147,7 +147,7 @@
                 v-ripple
               >
                 <div style="font-size: 15px;">
-                  {{ item.text }}
+                  {{ item.title }}
                 </div>
                 <div
                   style="font-size: 24px; line-height: 30px;"
