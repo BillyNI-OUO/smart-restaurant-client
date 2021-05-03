@@ -20,3 +20,4 @@ export const QUICK_DIRECT = [
 ]
 
 export const GOOGLE_MAP_APIKEY = 'AIzaSyCraYyX2-6pxunceWYaHgr5l-bQyrfEnxM'
+export const GOOGLE_MAP_MAPID = '7d0ee5dd5bfa9ee0'

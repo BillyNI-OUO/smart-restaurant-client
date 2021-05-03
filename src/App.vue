@@ -82,7 +82,12 @@ import MapLoader from './components/MapLoader.vue'
 import SearchEngine from './lib/search'
 import bus from './lib/bus'
 import { aspectRatingDescription } from './lib/utils'
-import { GOOGLE_MAP_APIKEY, NAME, QUICK_DIRECT } from './constant'
+import {
+  GOOGLE_MAP_APIKEY,
+  GOOGLE_MAP_MAPID,
+  NAME,
+  QUICK_DIRECT
+} from './constant'
 
 export default {
   name: 'App',
@@ -92,19 +97,14 @@ export default {
   data: () => ({
     keyword: '',
     mapConfig: {
+      mapId: GOOGLE_MAP_MAPID,
       zoom: 12,
       center: { lat: 24.79612, lng: 120.993 },
       fullscreenControl: false,
       gestureHandling: 'greedy',
       streetViewControl: false,
       mapTypeControl: false,
-      zoomControl: false,
-      styles: [
-        {
-          featureType: 'road',
-          stylers: [{ visibility: 'off' }]
-        }
-      ]
+      zoomControl: false
     },
     showSearch: true
   }),
