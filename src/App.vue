@@ -7,7 +7,7 @@
         <map-loader
           :markers="markers"
           :map-config="mapConfig"
-          apiKey="AIzaSyAgXa8SXxQA1hrWVUU8p-G351swReg1-5o"
+          :apiKey="GOOGLE_MAP_APIKEY"
         >
         </map-loader>
 
@@ -82,7 +82,7 @@ import MapLoader from './components/MapLoader.vue'
 import SearchEngine from './lib/search'
 import bus from './lib/bus'
 import { aspectRatingDescription } from './lib/utils'
-import { NAME, QUICK_DIRECT } from './constant'
+import { GOOGLE_MAP_APIKEY, NAME, QUICK_DIRECT } from './constant'
 
 export default {
   name: 'App',
@@ -92,7 +92,6 @@ export default {
   data: () => ({
     keyword: '',
     mapConfig: {
-      mapId: '2d966253da63a7e7',
       zoom: 12,
       center: { lat: 24.79612, lng: 120.993 },
       fullscreenControl: false,
@@ -110,6 +109,7 @@ export default {
     showSearch: true
   }),
   computed: {
+    GOOGLE_MAP_APIKEY: () => GOOGLE_MAP_APIKEY,
     NAME: () => NAME,
     QUICK_DIRECT: () => QUICK_DIRECT,
     showMapSearchToggle() {

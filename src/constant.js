@@ -18,3 +18,5 @@ export const QUICK_DIRECT = [
   { text: '氣氛好', searchText: '氣氛好的餐廳' },
   { text: '服務好', searchText: '服務好的餐廳' }
 ]
+
+export const GOOGLE_MAP_APIKEY = 'AIzaSyCraYyX2-6pxunceWYaHgr5l-bQyrfEnxM'
