@@ -466,12 +466,14 @@ export default {
 
         this.loadReviews()
 
+        /*
         this.$ga.event({
           eventCategory: 'detail',
           eventAction: 'detail',
           eventLabel: 'detail',
           eventValue: cid
         })
+        */
       })
     },
     loadReviews() {
@@ -523,12 +525,14 @@ export default {
             }
           }
 
+          /*
           this.$ga.event({
             eventCategory: 'feedback',
             eventAction: 'send',
             eventLabel: 'rating',
             eventValue: Object.assign({ cid: this.cid, rating: rating })
           })
+          */
         })
     },
     sendFeedbackDetail() {
@@ -548,12 +552,14 @@ export default {
             return
           }
 
+          /*
           this.$ga.event({
             eventCategory: 'feedback',
             eventAction: 'sendDetail',
             eventLabel: 'detail',
             eventValue: Object.assign({ cid: this.cid }, this.feedbackDetail)
           })
+          */
         })
     }
   },
