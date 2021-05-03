@@ -2,12 +2,14 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
-import VueAnalytics from 'vue-analytics'
 
+/*
+import VueAnalytics from 'vue-analytics'
 Vue.use(VueAnalytics, {
   id: 'G-PRN13V8SVN',
   router
 })
+*/
 
 Vue.config.productionTip = false
 
