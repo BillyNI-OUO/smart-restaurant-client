@@ -163,9 +163,9 @@
           <v-flex>
             <v-container pt-3 style="text-align: center;">
               <template v-if="!reportedMissingPlace">
-                <v-btn outlined @click="feedbackReportMissingPlace"
-                  >找不到餐廳嗎？</v-btn
-                >
+                <v-btn outlined @click="feedbackReportMissingPlace">
+                  找不到{{ NAME }}嗎？
+                </v-btn>
               </template>
 
               <template v-else>
@@ -186,7 +186,7 @@ import SearchEngine from '../lib/search'
 import { aspectRatingsDict, aspectRatingDescription } from '../lib/utils'
 import PlaceholderImage from '../components/PlaceholderImage.vue'
 import keepScrollTop from '../mixins/keepScrollTop'
-import { APIBASE, ASPECTS } from '../constant'
+import { NAME, APIBASE, ASPECTS } from '../constant'
 
 export default {
   name: 'Search',
@@ -233,6 +233,7 @@ export default {
     reportedMissingPlace: false
   }),
   computed: {
+    NAME: () => NAME,
     APIBASE: () => APIBASE,
     SearchEngine: () => SearchEngine,
     aspectRatingsDict: () => aspectRatingsDict,
@@ -267,16 +268,16 @@ export default {
       console.log('perform searching.', text)
 
       for (let { key, title } of ASPECTS) {
-        if (text === title + '好的餐廳') {
+        if (text === title + '好的' + this.NAME) {
           this.filterFilterBy = key
           this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
           return
         }
       }
 
-      if (text === '附近的餐廳') {
+      if (text === '附近的' + this.NAME) {
         this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-      } else if (text === '我附近的餐廳') {
+      } else if (text === '我附近的' + this.NAME) {
         this.searchNearbyGPS()
       } else {
         this.SearchEngine.search({

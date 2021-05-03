@@ -12,7 +12,7 @@
         </map-loader>
 
         <v-btn
-          @click="searchText('我附近的餐廳')"
+          @click="searchText('我附近的' + NAME)"
           color="white"
           elevation="2"
           fab
@@ -26,7 +26,7 @@
       <div class="map-search">
         <v-text-field
           v-model="keyword"
-          placeholder="搜尋餐廳"
+          :placeholder="'搜尋' + NAME"
           solo
           append-icon="mdi-magnify"
           clearable
@@ -82,7 +82,7 @@ import MapLoader from './components/MapLoader.vue'
 import SearchEngine from './lib/search'
 import bus from './lib/bus'
 import { aspectRatingDescription } from './lib/utils'
-import { QUICK_DIRECT } from './constant'
+import { NAME, QUICK_DIRECT } from './constant'
 
 export default {
   name: 'App',
@@ -110,6 +110,7 @@ export default {
     showSearch: true
   }),
   computed: {
+    NAME: () => NAME,
     QUICK_DIRECT: () => QUICK_DIRECT,
     showMapSearchToggle() {
       return this.$vuetify.breakpoint.mobile && this.$route.name === 'Search'
