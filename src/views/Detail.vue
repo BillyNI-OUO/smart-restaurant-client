@@ -36,7 +36,7 @@
             <p>
               <span>
                 <span class="yellow--text text--darken-4">
-                  {{ placeInfo.rating }}
+                  {{ placeInfo.rating && placeInfo.rating.toFixed(1) }}
                 </span>
                 <v-rating
                   style="display: inline; position: relative; top: -2px;"

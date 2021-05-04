@@ -91,7 +91,7 @@
                   </h3>
                   <div style="height: 24px; overflow: hidden;">
                     <span class="yellow--text text--darken-4">
-                      {{ item.rating }}
+                      {{ item.rating && item.rating.toFixed(1) }}
                     </span>
 
                     <v-rating
