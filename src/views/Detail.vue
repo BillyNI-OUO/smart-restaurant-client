@@ -131,8 +131,12 @@
           </v-list>
 
           <v-container v-if="hasAnyAspectRatings">
-            <h3 class="mt-3 mb-2">評論摘要</h3>
-
+            <h3 class="mt-3 mb-2 ">評論摘要
+              <div class="popup" >
+              <!--<span class="tooltiptext" v-if="!isHidden">資訊</span>-->
+                <span class="popuptext" >根據文字評論自動計算餐廳在不同向度的表現。</span>   
+              </div>
+            </h3>
             <v-layout wrap>
               <v-flex
                 v-for="item in ASPECTS.filter(
@@ -172,9 +176,11 @@
                   half-increments
                 ></v-rating>
                 -->
-                <div class="grey--text" style="font-size: 14px;">
+                <div :class="placeInfo[`${item.key}_count`] > 3 ? 'grey--text':'red--text text--darken-1 tooltip'" style="font-size: 14px;">
                   ({{ placeInfo[`${item.key}_count`] }})
+                  <span class="tooltiptext" v-if="placeInfo[`${item.key}_count`] <= 3" >評論數過少</span>  
                 </div>
+
               </v-flex>
             </v-layout>
           </v-container>
@@ -409,7 +415,7 @@ export default {
     cid: '',
     placeInfo: {},
     reviews: [],
-
+    isHidden : false,
     rated: RATED_STATE.NOT_RATED,
     feedbackRating: 1,
     feedbackDetail: Object.assign({}, feedbackDetailDefault),
@@ -587,6 +593,9 @@ export default {
     next()
   }
 }
+
+
+
 </script>
 
 <style scoped>
@@ -594,4 +603,110 @@ export default {
   height: 200px;
   background-size: cover;
 }
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+
+  /*border-bottom: 1px dotted black;  If you want dots under the hoverable text */
+}
+
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  font-size: 10px;
+  visibility: hidden;
+  width: 100px;
+  top: 140%;
+  left: 50%;
+  margin-left: -50px;
+  background-color: #808080;
+  color: #fff;
+  text-align: center;
+  padding: 6px 6px;
+  border-radius: 6px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #808080 transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s
+}
+.popup{
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABGdBTUEAALGPC/xhBQAAArhJREFUSA3FlmtPVDEQhgF1BRVELlHRCPtB5IOE8BP4/zEhGhJJNBJCNkaQq3IV5H0OZzZDt5ezfOFN3u12Ou10OtPpGRi4Jzy4o91BzRsWH4n/a6ppDhZoAjY4KU6JE2JL9PinzqG4I26LZ2IWJcOMvxHnxNCYRFFwAh3xh3ge1ZAwZ/ipxhfFJ6nJBfmlxtfFnzG9VIw51iXxcWxSQ9mQ9KZF2r1wzsNQoP64iKdMiGFfwi3xSCS2oyIGZsTYCc5KDr7fNDe/ocdk6rIY2xAzvolfxb8iRq/EE/G3yIY4qXBNiSpn0PtDB4ReLUjGFYmBhNl0AxjwocAwm0phXgPdtf3uuCbtxCwSZVUkYwGLEI53IvPwGJ1jcUyMJSROYg/dWx6njKLHEbEweCm+FS2ez/X/vWjA8xTIgxaDFks67DQFPH1dD76KKI07WTeOTmZ/8Zoi1DHDZKV5YEq+ZWG/uB/jP0dsGLE/iRZbHUuu0YRSEzEhINsNeJRDZcsM++zMTQrHMPpZ5E4DwkGy5UBmD5rhKuA57cTYmuRWlbjDHxJ6XkxIW2aYQtAvOprAawSeiR9FWw9ZDlemWHzGIqts1DI8wKivCfVQtMHJi7sa5rk7rZcl22MFox7uaSonzfBuz3Be0M/1CVeqbNk9JkEo+tYPlcM+Xq6EwoZ9vlC6ycC5/2o40dSIrdFkpZbwVLfAjpoJfKpYPaafA3rcXdhPYmKjemh8JrIYG3khlnAghU8iVwpwh0tgk+um5D1Gxo76TTRbK9dyC754Be+xySkK1NtcNeO4OCHqLolGAUkBPYzeerVIjhjIbopCqe7G5noZ8fe1vDsW85hBstw+S3mnw5CgUwLXBqN8a/Ug5bFX5MjbIl8epXvOhrku5MqhmEQTwzYZXeLJ8fOMQk6C4yR5MER+UIiKuAb4IXdFgZpBvgAAAABJRU5ErkJggg==);
+  background-size: 14px;
+  width: 14px;
+  height: 14px;
+  position: relative;
+  left: 3px;
+  top: -5px;
+  display: inline-block;
+}
+
+
+.popup .popuptext {
+  font-size: 10px;
+  visibility: hidden;
+  width: 150px;
+  background-color: #808080;
+  color: #fff;
+  text-align: center;
+  padding: 6px 6px;
+  border-radius: 6px;
+  top: -15px;
+  left: 150%;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #808080 transparent transparent;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup:hover .popuptext {
+
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+
+
 </style>
