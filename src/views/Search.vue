@@ -163,13 +163,67 @@
           <v-flex>
             <v-container pt-3 style="text-align: center;">
               <template v-if="!reportedMissingPlace">
-                <v-btn outlined @click="feedbackReportMissingPlace">
+                <v-btn outlined @click="reportedMissingPlace=!reportedMissingPlace; reportName = keyword">
                   找不到{{ NAME }}嗎？
                 </v-btn>
               </template>
+              <template  v-if="reportedMissingPlace">
+                <v-form
+                  ref="form"
+                  lazy-validation
+                  v-model="reportValid"
+                >
+                  <v-text-field
+                    v-model="reportName"
+                    :counter="20"
+                    :rules="nameRules"
+                    label="餐廳名字"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="reportLabel"
+                    :counter="50"
+                    :rules="labelRules"
+                    label="備註"
+                  ></v-text-field>
+                  <v-btn
+                    :disabled="!reportValid"
+                    color="success"
+                    class="mr-4"
+                    @click="feedbackReportMissingPlace"
+                  >
+                    送出
+                  </v-btn>
+                  <v-btn
+                    color="error"
+                    class="mr-4"
+                    @click="reportedMissingPlace=!reportedMissingPlace"
+                  >
+                    取消
+                  </v-btn>
+                </v-form>
+              </template>
+              <template>
+                <div class="text-center">
+                  <v-snackbar
+                    v-model="snackbar"
+                    :timeout="timeout"
+                    :multi-line="multiLine"
+                  >
+                    {{ snackbarText }}
 
-              <template v-else>
-                <p>感謝您的回報</p>
+                    <template v-slot:action="{ attrs }">
+                      <v-btn
+                        color="blue"
+                        text
+                        v-bind="attrs"
+                        @click="snackbar = false"
+                      >
+                        Close
+                      </v-btn>
+                    </template>
+                  </v-snackbar>
+                </div>
               </template>
             </v-container>
           </v-flex>
@@ -195,7 +249,12 @@ export default {
   data: () => ({
     text: '',
     keyword: '',
-
+    reportLabel: '',
+    reportName: '',
+    reportValid: true,
+    snackbar: false,
+    timeout:2000,
+    snackbarText: '感謝你的回報',
     // deprecated
     ratingItems: [
       { text: '評價', value: 0 },
@@ -230,7 +289,14 @@ export default {
       { text: '評價排序', value: 'rating' }
     ],
 
-    reportedMissingPlace: false
+    reportedMissingPlace: false,
+    nameRules:[
+      v => !!v || 'Restaurant\'s name is required',
+      v => (v && v.length <= 20) || 'Restaurant\'s name must be less than 20 characters'
+    ],
+    labelRules:[
+      v => (v && v.length <= 50) || 'Label must be less than 50 characters'
+    ]
   }),
   computed: {
     NAME: () => NAME,
@@ -288,6 +354,7 @@ export default {
           filter_by: this.filterFilterBy
         })
       }
+      this.reportedMissingPlace = false
     },
     searchNearbyGPS() {
       console.log('gps')
@@ -321,15 +388,17 @@ export default {
       this.$router.push(`/search/${this.keyword}`)
     },
     feedbackReportMissingPlace() {
-      if (!this.keyword) {
+      if (!this.reportName) {
         return
       }
 
-      this.reportedMissingPlace = true
+      this.reportedMissingPlace = false
+      this.snackbar = true
       return new Promise((resolve, reject) => {
         axios
           .post(`${this.APIBASE}/feedback/missing_place`, {
-            name: this.keyword
+            name: this.reportName,
+            label: this.reportLabel
           })
           .then((res) => {
             let data = res.data
