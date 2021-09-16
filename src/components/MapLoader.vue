@@ -170,16 +170,25 @@ export default {
 
       marker.addListener('click', () => {
         this.$emit('marker-click', args.id)
+        
+        this.setZoom(18)
+        this.setCenter(adjustedPosition)
         marker.setAnimation(this.google.maps.Animation.BOUNCE)
-        marker.setAnimation(null)
+        setTimeout(()=> {marker.setAnimation(null)}, 1500)
         this.$router.push(`/detail/${args.id}`)
         // this.setCenter(args.position)
       })
 
       SearchEngine.$on(`marker-highlight-${args.id}`, () => {
+        
+        this.setZoom(18)
+        this.setCenter(adjustedPosition)
         marker.setAnimation(this.google.maps.Animation.BOUNCE)
-        marker.setAnimation(null)
+        setTimeout(()=> {marker.setAnimation(null)}, 1500)
+          
+        
       })
+
 
       this.markersIds.push(args.id)
     },
