@@ -1,22 +1,23 @@
 // 'http://localhost'
+import i18n from './plugins/vue-i18n'
 export const APIBASE = 'https://smart-restaurant.duckdns.org'
 
-export const NAME = '餐廳'
+export const NAME = i18n.t('CONSTANT.Name')
 
 export const ASPECTS = [
-  { key: 'food', title: '食物' },
-  { key: 'service', title: '服務' },
-  { key: 'atmosphere', title: '氣氛' },
-  { key: 'cleanliness', title: '清潔' },
-  { key: 'value', title: '價值' }
+  { key: 'food', title: i18n.t('ASPECT.Food') },
+  { key: 'service', title: i18n.t('ASPECT.Service') },
+  { key: 'atmosphere', title: i18n.t('ASPECT.Atmosphere') },
+  { key: 'cleanliness', title: i18n.t('ASPECT.Cleanliness') },
+  { key: 'value', title: i18n.t('ASPECT.Value') }
 ]
 
 export const QUICK_DIRECT = [
-  { text: '附近的餐廳', searchText: '附近的餐廳' },
-  { text: '食物好', searchText: '食物好的餐廳' },
-  { text: '高CP值', searchText: '價值好的餐廳' },
-  { text: '氣氛好', searchText: '氣氛好的餐廳' },
-  { text: '服務好', searchText: '服務好的餐廳' }
+  { key: 'nearby', text: i18n.t('QUICKDIRECT.Nearby'), searchText: i18n.t('QUICKDIRECT.NearbyText') },
+  { key: 'food',text: i18n.t('QUICKDIRECT.Food'), searchText: i18n.t('QUICKDIRECT.FoodText') },
+  { key: 'value',text: i18n.t('QUICKDIRECT.Value'), searchText: i18n.t('QUICKDIRECT.ValueText') },
+  { key: 'atmosphere',text: i18n.t('QUICKDIRECT.Atmosphere'), searchText: i18n.t('QUICKDIRECT.AtmosphereText') },
+  { key: 'service',text: i18n.t('QUICKDIRECT.Service'), searchText: i18n.t('QUICKDIRECT.ServiceText') }
 ]
 
 export const GOOGLE_MAP_APIKEY = 'AIzaSyCraYyX2-6pxunceWYaHgr5l-bQyrfEnxM'

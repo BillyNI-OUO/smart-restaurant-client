@@ -53,7 +53,9 @@ export default {
       markersInst: [],
       markersIds: [],
       adjustLat: 0,
-      adjustLng: 0.008755
+      adjustLng: 0.008755,
+      curlat: 25.0,
+      curlng: 120.0
     }
   },
   mounted() {
@@ -61,6 +63,7 @@ export default {
       apiKey: this.apiKey
     }).then((google) => {
       this.google = google
+      this.getLocalCord()
       this.initializeMap()
 
       for (let val of this.markers) {
@@ -69,9 +72,23 @@ export default {
     })
   },
   methods: {
+    getLocalCord() {
+      /*navigator.geolocation.getCurrentPosition(
+        position => {
+          this.mapConfig.center.lat = position.coords.latitude
+          //console.log(this.mapConfig)
+          this.mapConfig.center.lng = position.coords.longitude
+          this.mapConfig.zoom = 16
+        },
+        error => {
+          console.log(error.message)
+        },
+      )*/
+    },
     initializeMap() {
       const mapContainer = this.$el.querySelector('#map')
       const { Map } = this.google.maps
+      
       this.map = new Map(mapContainer, this.mapConfig)
 
       this.map.addListener('zoom_changed', () => {

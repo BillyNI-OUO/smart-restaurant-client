@@ -1,9 +1,10 @@
 <template>
   <v-app>
     <v-main>
+            
       <div class="map">
         <!-- <Map :markers="markers" :center="center" :zoom="zoom"> </Map> -->
-
+          
         <map-loader
           :markers="markers"
           :map-config="mapConfig"
@@ -26,7 +27,7 @@
       <div class="map-search">
         <v-text-field
           v-model="keyword"
-          :placeholder="'搜尋' + NAME"
+          :placeholder="$t('UI.Search') + NAME"
           solo
           append-icon="mdi-magnify"
           clearable
@@ -42,21 +43,22 @@
           <template v-for="item in QUICK_DIRECT">
             <v-btn
               @click="searchText(item.searchText)"
-              small
               rounded
               class="mr-2"
               :key="item.text"
+              v-bind="{'x-small':$t('GENERAL.Lang')==='en', small:$t('GENERAL.Lang')==='tw'}"
             >
               {{ item.text }}
             </v-btn>
           </template>
         </div>
+        
       </div>
 
       <keep-alive>
         <router-view v-if="!(showMapSearchToggle && !showSearch)"></router-view>
       </keep-alive>
-
+      
       <v-btn
         absolute
         style="bottom: 30px; right: 10px;"
@@ -66,14 +68,18 @@
         @click="showSearch = !showSearch"
       >
         <template v-if="showSearch">
-          <v-icon class="mr-2">mdi-map</v-icon>顯示地圖
+          <v-icon class="mr-2">mdi-map</v-icon>{{$t('UI.ShowMap')}}
         </template>
         <template v-else>
-          <v-icon class="mr-2">mdi-view-list</v-icon>顯示清單
+          <v-icon class="mr-2">mdi-view-list</v-icon>{{$t('UI.ShowList')}}
         </template>
       </v-btn>
+      <div >
+          <v-btn class="mx-2 translate" fab dark small color="teal"  @click="setLang" >{{$t('GENERAL.ChangeLang')}}</v-btn>
+      </div>
     </v-main>
   </v-app>
+
 </template>
 
 <script>
@@ -95,6 +101,8 @@ export default {
   components: { MapLoader },
 
   data: () => ({
+    curlat: 24.79612,
+    curlng: 120.993,
     keyword: '',
     mapConfig: {
       mapId: GOOGLE_MAP_MAPID,
@@ -106,7 +114,8 @@ export default {
       mapTypeControl: false,
       zoomControl: false
     },
-    showSearch: true
+    showSearch: true,
+    //buttomsize: this.$i18n('GENERAL.ButtomSize'),
   }),
   computed: {
     GOOGLE_MAP_APIKEY: () => GOOGLE_MAP_APIKEY,
@@ -155,14 +164,40 @@ export default {
       this.showSearch = true
       this.$router.push(`/search/${this.keyword}`)
       this.blur()
+    },
+    setLang(){
+      if (localStorage.getItem('language') === 'en') {
+        localStorage.setItem('language', 'tw')
+      } else {
+        localStorage.setItem('language', 'en')
+      }
+      return history.go(0)
     }
+    
+  },
+  beforeCreate(){
+    
   },
   created() {
     if (this.$router.currentRoute.name === 'Search') {
       this.$router.push('/')
     }
   },
+  beforeMount(){
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.mapConfig.center.lat = position.coords.latitude
+        //console.log(this.mapConfig)
+        this.mapConfig.center.lng = position.coords.longitude
+        this.mapConfig.zoom = 15
+      },
+      error => {
+        console.log(error.message)
+      },
+    )
+  },
   mounted() {
+
     bus.$on('search-clear', () => {
       this.keyword = ''
     })
@@ -196,5 +231,13 @@ export default {
   background-color: white;
   box-shadow: 0px 0 5px #000;
   overflow-y: scroll;
+}
+
+.translate{
+  top: 35px; 
+  overflow: hidden; 
+  position: fixed; 
+  right: 35px; 
+  z-index: 999;
 }
 </style>
