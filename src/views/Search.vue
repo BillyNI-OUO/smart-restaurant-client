@@ -63,7 +63,7 @@
         <v-layout wrap>
           <template v-if="SearchEngine.resultList.length === 0">
             <v-flex xs12 style="text-align: center;" pt-5>
-              沒有符合的項目
+              {{$t('FEEDBACK.NoMatching')}}
             </v-flex>
           </template>
 
@@ -129,7 +129,7 @@
                       v-if="!item.user_ratings_total"
                       class="grey--text text--darken-1"
                     >
-                      評論不足
+                      {{$t('DETAIL.NotEnoughComment')}}
                     </span>
                   </div>
                   <div
@@ -164,7 +164,7 @@
             <v-container pt-3 style="text-align: center;">
               <template v-if="!reportedMissingPlace">
                 <v-btn outlined @click="reportedMissingPlace=!reportedMissingPlace; reportName = keyword">
-                  找不到{{ NAME }}嗎？
+                  {{$t('FEEDBACK.CantFindText')}}
                 </v-btn>
               </template>
               <template  v-if="reportedMissingPlace">
@@ -177,14 +177,14 @@
                     v-model="reportName"
                     :counter="20"
                     :rules="nameRules"
-                    label="餐廳名字"
+                    :label="restaurantLabel"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="reportLabel"
                     :counter="50"
                     :rules="labelRules"
-                    label="備註"
+                    :label="noteLabel"
                   ></v-text-field>
                   <v-btn
                     :disabled="!reportValid"
@@ -192,14 +192,14 @@
                     class="mr-4"
                     @click="feedbackReportMissingPlace"
                   >
-                    送出
+                    {{$t('FEEDBACK.Submit')}}
                   </v-btn>
                   <v-btn
                     color="error"
                     class="mr-4"
                     @click="reportedMissingPlace=!reportedMissingPlace"
                   >
-                    取消
+                    {{$t('FEEDBACK.Cancel')}}
                   </v-btn>
                 </v-form>
               </template>
@@ -240,64 +240,69 @@ import SearchEngine from '../lib/search'
 import { aspectRatingsDict, aspectRatingDescription } from '../lib/utils'
 import PlaceholderImage from '../components/PlaceholderImage.vue'
 import keepScrollTop from '../mixins/keepScrollTop'
-import { NAME, APIBASE, ASPECTS } from '../constant'
+import { NAME, APIBASE, ASPECTS, QUICK_DIRECT } from '../constant'
+import i18n from '../plugins/vue-i18n'
 
 export default {
   name: 'Search',
   mixins: [keepScrollTop],
   components: { PlaceholderImage },
-  data: () => ({
-    text: '',
-    keyword: '',
-    reportLabel: '',
-    reportName: '',
-    reportValid: true,
-    snackbar: false,
-    timeout:2000,
-    snackbarText: '感謝你的回報',
-    // deprecated
-    ratingItems: [
-      { text: '評價', value: 0 },
-      { text: '1⭐+', value: 1 },
-      { text: '2⭐+', value: 2 },
-      { text: '3⭐+', value: 3 },
-      { text: '4⭐+', value: 4 },
-      { text: '4.5⭐+', value: 4.5 }
-    ],
-    filterRating: 0,
+  data() {
+    return {
+      text: '',
+      keyword: '',
+      reportLabel: '',
+      reportName: '',
+      reportValid: true,
+      snackbar: false,
+      timeout:2000,
+      snackbarText: this.$t('FEEDBACK.ThxFeedBack'),
+      restaurantLabel :this.$t('FEEDBACK.RestaurantLabel'),
+      noteLabel : this.$t('FEEDBACK.NoteLabel'),
+      // deprecated
+      ratingItems: [
+        { text: '評價', value: 0 },
+        { text: '1⭐+', value: 1 },
+        { text: '2⭐+', value: 2 },
+        { text: '3⭐+', value: 3 },
+        { text: '4⭐+', value: 4 },
+        { text: '4.5⭐+', value: 4.5 }
+      ],
+      filterRating: 0,
 
-    filterByItems: [
-      { text: '篩選', value: '' },
-      { text: '總分 4⭐+', value: 'rating' },
+      filterByItems: [
+        { text: this.$t('GENERAL.Filter'), value: '' },
+        { text: this.$t('GENERAL.TotalRating'), value: 'rating' },
 
-      ...ASPECTS.map((v) => ({ text: `${v.title} 4⭐+`, value: v.key }))
-    ],
-    filterFilterBy: '',
+        ...ASPECTS.map((v) => ({ text: `${v.title} 4⭐+`, value: v.key }))
+      ],
+      filterFilterBy: '',
 
-    priceLevelItems: [
-      { text: '價格', value: 0 },
-      { text: '$+', value: 1 },
-      { text: '$$+', value: 2 },
-      { text: '$$$+', value: 3 },
-      { text: '$$$$+', value: 4 }
-    ],
-    filterPriceLevel: 0,
+      priceLevelItems: [
+        { text: this.$t('GENERAL.Price'), value: 0 },
+        { text: '$+', value: 1 },
+        { text: '$$+', value: 2 },
+        { text: '$$$+', value: 3 },
+        { text: '$$$$+', value: 4 }
+      ],
+      filterPriceLevel: 0,
 
-    filterSortBy: 'distance',
-    sortByList: [
-      { text: '距離排序', value: 'distance' },
-      { text: '評價排序', value: 'rating' }
-    ],
+      filterSortBy: 'distance',
+      sortByList: [
+        { text: this.$t('GENERAL.SortByDist'), value: 'distance' },
+        { text: this.$t('GENERAL.SortByRating'), value: 'rating' }
+      ],
 
-    reportedMissingPlace: false,
-    nameRules:[
-      v => !!v || 'Restaurant\'s name is required',
-      v => (v && v.length <= 20) || 'Restaurant\'s name must be less than 20 characters'
-    ],
-    labelRules:[
-      v => (v && v.length <= 50) || 'Label must be less than 50 characters'
-    ]
-  }),
+      reportedMissingPlace: false,
+      nameRules:[
+        v => !!v || 'Restaurant\'s name is required',
+        v => (v && v.length <= 20) || 'Restaurant\'s name must be less than 20 characters'
+      ],
+      labelRules:[
+        v => (v && v.length <= 50) || 'Label must be less than 50 characters'
+      ]
+    }
+  },
   computed: {
     NAME: () => NAME,
     APIBASE: () => APIBASE,
@@ -324,30 +329,34 @@ export default {
       this.reportedMissingPlace = false
       blur()
     },
-    search(text) {
-      if (!text) {
-        text = this.keyword
+    search(Text) {
+      if (!Text) {
+        Text = this.keyword
       }
-      this.keyword = text
+      this.keyword = Text
       this.blur()
       this.SearchEngine.clear()
-      console.log('perform searching.', text)
+      console.log('perform searching.', Text)
 
-      for (let { key, title } of ASPECTS) {
-        if (text === title + '好的' + this.NAME) {
-          this.filterFilterBy = key
-          this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-          return
+      if (Text != i18n.t('QUICKDIRECT.NearbyText')) {
+        for (let {key, text, searchText } of QUICK_DIRECT) {
+          
+          if (Text === searchText) {
+
+            this.filterFilterBy = key
+            this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
+            return
+          }
         }
       }
-
-      if (text === '附近的' + this.NAME) {
+      if (Text === i18n.t('QUICKDIRECT.NearbyText')) {
+        
         this.searchNearby(this.SearchEngine.mapLat, this.SearchEngine.mapLng)
-      } else if (text === '我附近的' + this.NAME) {
+      } else if (Text === '我附近的' + this.NAME) {
         this.searchNearbyGPS()
       } else {
         this.SearchEngine.search({
-          keyword: text,
+          keyword: Text,
           rating: this.filterRating,
           price_level: this.filterPriceLevel,
           sort_by: this.filterSortBy,

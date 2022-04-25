@@ -16,7 +16,7 @@
             style="background-color: #ffffffdd;"
           >
             <v-icon>mdi-arrow-left</v-icon>
-            返回上一頁
+            {{$t('DETAIL.LastPage')}}
           </v-btn>
           <v-btn
             depressed
@@ -24,7 +24,7 @@
             style="background-color: #ffffffdd; float: right;"
           >
             <v-icon>mdi-close</v-icon>
-            關閉
+            {{$t('DETAIL.Close')}}
           </v-btn>
         </v-container>
       </placeholder-image>
@@ -58,7 +58,7 @@
                   class="grey--text text--darken-1"
                   v-if="placeInfo.user_ratings_total"
                 >
-                  ({{ placeInfo.user_ratings_total }}則評論)
+                  ({{ placeInfo.user_ratings_total }}{{$t('DETAIL.Reviews')}})
                 </span>
                 <span
                   v-if="placeInfo.price_level"
@@ -72,7 +72,7 @@
                   v-if="!placeInfo.user_ratings_total"
                   class="grey--text text--darken-1"
                 >
-                  評論不足
+                  {{$t('DETAIL.NotEnoughComment')}}
                 </span>
               </span>
               <br />
@@ -95,7 +95,7 @@
                 <v-icon color="primary">mdi-map</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title> 在 Google Map 中開啟 </v-list-item-title>
+                <v-list-item-title> {{$t('DETAIL.OpenInGoogle')}} </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
@@ -131,10 +131,11 @@
           </v-list>
 
           <v-container v-if="hasAnyAspectRatings">
-            <h3 class="mt-3 mb-2 ">評論摘要
+            <h3 class="mt-3 mb-2 ">{{$t('DETAIL.ReviewSummary')}}
               <div class="popup" >
               <!--<span class="tooltiptext" v-if="!isHidden">資訊</span>-->
-                <span class="popuptext" >根據文字評論自動計算餐廳在不同向度的表現。</span>   
+                <span class="popuptext" >{{$t('DETAIL.Hint')}}</span> 
+
               </div>
             </h3>
             <v-layout wrap>
@@ -178,7 +179,7 @@
                 -->
                 <div :class="placeInfo[`${item.key}_count`] > 3 ? 'grey--text':'red--text text--darken-1 tooltip'" style="font-size: 14px;">
                   ({{ placeInfo[`${item.key}_count`] }})
-                  <span class="tooltiptext" v-if="placeInfo[`${item.key}_count`] <= 3" >評論數過少</span>  
+                  <span class="tooltiptext" v-if="placeInfo[`${item.key}_count`] <= 3" >{{$t('DETAIL.LessComment')}}</span>  
                 </div>
 
               </v-flex>
@@ -189,24 +190,24 @@
 
           <v-container v-if="hasAnyAspectRatings">
             <v-layout v-if="rated === RATED_STATE.NOT_RATED">
-              <v-flex style="padding-top: 3px; font-size: 14px;">
-                您覺得這些資訊準確嗎？
+              <v-flex  v-bind:style="{fontSize: $t('DETAIL.CorrectSummarySize'),'padding-top' : $t('DETAIL.CorrectSummaryPadding')}">
+                {{$t('DETAIL.CorrectSummary')}}
               </v-flex>
               <v-flex style="width: 175px; text-align: right;">
                 <v-btn text @click="feedback(0)" small class="mr-3">
-                  不準確
+                  {{$t('DETAIL.NotCorrect')}}
                 </v-btn>
                 <v-btn outlined @click="feedback(1)" small>
-                  準確
+                  {{$t('DETAIL.Correct')}}
                 </v-btn>
               </v-flex>
             </v-layout>
 
             <v-layout v-if="rated === RATED_STATE.DETAIL" wrap>
               <v-flex xs12 style="padding-top: 3px; font-size: 14px;">
-                <h3 class="mt-3 mb-2">請問您覺得是哪個指標不準確呢？</h3>
+                <h3 class="mt-3 mb-2">{{$t('DETAIL.WhichIndex')}}</h3>
                 <span class="grey--text text--darken-1">
-                  請透過右方的星星來調整您認為的分數
+                  {{$t('DETAIL.AdjustStar')}}
                 </span>
               </v-flex>
               <v-flex xs12 style="" class="mt-2" v-if="hasAnyAspectRatings">
@@ -224,7 +225,7 @@
                         class="grey--text text--darken-1"
                         style="display: inline; position: relative; top: -1px; font-size: 14px;"
                       >
-                        原分數
+                        {{$t('DETAIL.Origin')}}
                       </span>
                       <span class="yellow--text text--darken-4">
                         {{ placeInfo[`${item.key}_rating`].toFixed(1) }}
@@ -239,7 +240,7 @@
                         class="grey--text text--darken-1"
                         style="display: inline; position: relative; top: -1px; font-size: 14px;"
                       >
-                        您認為
+                        {{$t('DETAIL.After')}}
                       </span>
                       <span class="yellow--text text--darken-4">
                         {{ feedbackDetail[`${item.key}_rating`].toFixed(1) }}
@@ -269,7 +270,7 @@
               <v-flex xs12>
                 <v-textarea
                   class="mt-4"
-                  label="其他想法或建議"
+                  :label="this.$t('DETAIL.OtherSuggestion')"
                   outlined
                   rows="2"
                   v-model="feedbackDetail.memo"
@@ -277,10 +278,10 @@
               </v-flex>
               <v-flex xs12 style="text-align: right;">
                 <v-btn text @click="rated = RATED_STATE.RATED" class="mr-3">
-                  取消
+                  {{$t('FEEDBACK.Cancel')}}
                 </v-btn>
                 <v-btn text @click="sendFeedbackDetail()" outlined>
-                  送出
+                  {{$t('FEEDBACK.Submit')}}
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -291,7 +292,7 @@
                   style="width: 150px"
                   src="https://chojugiga.com/c/choju54_0031/choju54_0031.png"
                 />
-                <p>謝謝你</p>
+                <p>{{$t('FEEDBACK.Thanks')}}</p>
               </div>
             </v-layout>
           </v-container>
@@ -299,7 +300,7 @@
           <v-divider v-if="hasAnyAspectRatings"></v-divider>
 
           <v-container>
-            <h3 class="mt-5 mb-2">評論</h3>
+            <h3 class="mt-5 mb-2">{{$t('DETAIL.Review')}}</h3>
 
             <v-layout>
               <v-flex mr-3>
@@ -378,7 +379,7 @@
           </template>
 
           <template v-if="reviews.length === 0">
-            <p style="text-align: center;" class="mt-3">沒有評論</p>
+            <p style="text-align: center;" class="mt-3">{{$t('DETAIL.NoReview')}}</p>
           </template>
         </v-flex>
       </v-layout>
@@ -411,29 +412,31 @@ const RATED_STATE = {
 export default {
   name: 'Detail',
   components: { PlaceholderImage },
-  data: () => ({
-    cid: '',
-    placeInfo: {},
-    reviews: [],
-    isHidden : false,
-    rated: RATED_STATE.NOT_RATED,
-    feedbackRating: 1,
-    feedbackDetail: Object.assign({}, feedbackDetailDefault),
+  data () {
+    return {
+      cid: '',
+      placeInfo: {},
+      reviews: [],
+      isHidden : false,
+      rated: RATED_STATE.NOT_RATED,
+      feedbackRating: 1,
+      feedbackDetail: Object.assign({}, feedbackDetailDefault),
 
-    reviewsAspect: 'all',
-    reviewsAspectList: [
-      { text: '全部', value: 'all' },
+      reviewsAspect: 'all',
+      reviewsAspectList: [
+        { text: this.$t('DETAIL.All'), value: 'all' },
 
-      ...ASPECTS.map((v) => ({ text: v.title, value: v.key }))
-    ],
-    reviewsSortBy: 'importance',
-    reviewsSortByList: [
-      { text: '重要性', value: 'importance' },
-      { text: '時間', value: 'time' },
-      { text: '評價（高至低）', value: 'rating_desc' },
-      { text: '評價（低至高）', value: 'rating_asc' }
-    ]
-  }),
+        ...ASPECTS.map((v) => ({ text: v.title, value: v.key }))
+      ],
+      reviewsSortBy: 'importance',
+      reviewsSortByList: [
+        { text: this.$t('DETAIL.Importance'), value: 'importance' },
+        { text: this.$t('DETAIL.Time'), value: 'time' },
+        { text: this.$t('DETAIL.RatingDesc'), value: 'rating_desc' },
+        { text: this.$t('DETAIL.RatingAsc'), value: 'rating_asc' }
+      ],
+    }
+  },
   computed: {
     APIBASE: () => APIBASE,
     ASPECTS: () => ASPECTS,

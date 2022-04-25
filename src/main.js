@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
-
+import i18n from './plugins/vue-i18n'
 /*
 import VueAnalytics from 'vue-analytics'
 Vue.use(VueAnalytics, {
@@ -27,5 +27,6 @@ document.body.addEventListener('click', function(evt) {
 new Vue({
   router,
   vuetify,
+  i18n,
   render: (h) => h(App)
 }).$mount('#app')
